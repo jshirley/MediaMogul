@@ -1,0 +1,5 @@
+<div id="hero" class="update-remote">
+ <h3>[% message.subject | html %]</h3>
+ <p>[% message.text | html %]</p>
+ <a class="message-closer" href="#hero"><img src="[% static('/static/images/actions/close.png') %]"></a>
+</div>

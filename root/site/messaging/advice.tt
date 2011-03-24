@@ -1,0 +1,6 @@
+<div id="advice" class="update-remote">
+ <h3>[% c.loc('Advice!') %]</h3>
+ <img class="icon" src="[% static('/static/images/idea.png') %]" alt="[% c.loc('Idea') %]">
+ <p>Jarvis is in Beta. Remember that we <em>want your feedback</em>.  If you have any thoughts, please <a href="[% c.uri_for_action('/support/root', { type => 'Feedback' }) %]">let us know</a>!</p>
+ <a class="message-closer" href="#advice"><img src="[% static('/static/images/actions/close.png') %]"></a>
+</div>

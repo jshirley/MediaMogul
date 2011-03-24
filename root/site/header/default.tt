@@ -1,0 +1,12 @@
+<div class="header">
+ <a href="[% c.uri_for('/') %]">[% c.loc('Home') %]</a>
+</div>
+[% IF messages.for_scope('sidebar').has_messages;
+    PROCESS "site/messages.tt", message_scope => 'sidebar';
+END %]
+[% # Include the navigation
+IF page.nav && page.nav != 'none';
+    PROCESS "site/nav/${page.nav}.tt";
+END;
+~%]
+[% #PROCESS site/messaging/hero.tt %]

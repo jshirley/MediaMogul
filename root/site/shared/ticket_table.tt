@@ -1,0 +1,71 @@
+[%~
+
+USE Number.Format(DECIMAL_DIGITS = 0);
+
+~%]
+<table class="summary">
+ <tbody>
+  <tr class="head">
+   <th>[% c.loc('Ticket') %]</th>
+   <th>[% c.loc('Summary') %]</th>
+   <th>[% c.loc('Type') %]</th>
+   <th>[% c.loc('Status') %]</th>
+   <th>[% c.loc('Owner') %]</th>
+   <th>[% c.loc('Date Due') %]</th>
+   <th>[% c.loc('Priority') %]</th>
+  </tr>
+[% SET statuses = {}; %]
+[% SET tickets_total = 0 %]
+[% SET tickets_closed = 0 %]
+[% FOREACH ticket IN tickets;
+    classes = [];
+
+
+    ticket_uri = c.uri_for_action('/ticket/object', [ ticket.id ]);
+    IF ticket.status.name == '@closed';
+        classes.push('closed');
+        tickets_closed = tickets_closed + 1;
+    END;
+    IF ticket.needs_attention.count;
+        classes.push('imp');
+    END;
+    IF loop.index % 2 == 0;
+        classes.push('odd');
+    END;
+
+    tickets_total = tickets_total + 1;
+
+~%]
+  <tr class="[% classes.join(' ') %]">
+   <th class="num link"><a href="[% ticket_uri %]">[% ticket.id %]</a></th>
+   <td class="link"><a href="[% ticket_uri %]">[% ticket.name | html %]</a></td>
+   <td><span class="type" style="background-color: #[% ticket.type.color %]; color: [% ticket.type.foreground_color %]">[% system_localize(ticket.type.name) %]</span></td>
+   <td>[% c.loc(ticket.status.name) %]</td>
+   <td>[% ticket.owner.name | html %]</td>
+   <td>[% due_date = ticket.due_date; IF due_date; %]<time datetime="[% due_date.dt_marker %]">[% pretty_date(due_date.dt_marker); %]</time>[% ELSE; "&mdash;"; END %]</td>
+   <td>[% c.loc(ticket.priority.name) %]</td>
+  </tr>
+  [% statuses.${ticket.status.name} = 1 + statuses.${ticket.status.name} %]
+[% END %]
+ </tbody>
+[% IF tickets_total %]
+ <tfoot>
+   <tr>
+    [%= SET complete_percent = ( tickets_closed / tickets_total ) * 100 ~%]
+    <td colspan="7">
+	 [% IF complete_percent == 0 %]
+	 <div class="cmpl">0%</div>
+	 [% ELSE %]
+	 <div class="cmpl"><div style="width: [% complete_percent | format_number %]px">[% complete_percent | format_number %]%</div></div>
+	 [% END %]
+     <details>
+	 [% FOREACH status = statuses.keys %]
+	   [% IF loop.count > 1 %]+ [% END %][% c.loc('TICKET STATUS COUNT', [ statuses.${status}, system_localize(status) ] ) %]
+	 [% END %]
+     = [% c.loc('[_1] Total', [ tickets_total ] ) %]</details>
+	 </details>
+    </td>
+   </tr>
+ </tfoot>
+[% END %]
+</table>

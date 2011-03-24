@@ -1,0 +1,37 @@
+<div id="pager">
+ <p>[% c.loc('Results [_1] to [_2] of [_3], Page [_4] of [_5]', pager.first, pager.last, pager.total_entries, pager.current_page, pager.last_page) %]</p>
+ <ol>
+  <li class="first"><a href="[% c.req.uri_with({ page => pager.first_page }) %]"><img src="/static/images/actions/resultset_first.png"></a></li>
+  [% IF pager.current_page > pager.first_page %]
+  <li class="first"><a href="[% c.req.uri_with({ page => pager.previous_page }) %]">[% c.loc('Previous') %]</a></li>
+  [% ELSE %]
+  <li class="first">[% c.loc('Previous') %]</li>
+  [% END %]
+  [%
+    # I'm almost certainly doing this COMPLETELY batshit crazily...
+    SET window = 3; # How many pages to show on each side
+    SET start_page = pager.current_page - window;
+    IF start_page < 1; start_page = 1; END;
+    SET used = pager.current_page - start_page;
+    SET end_page = pager.current_page + window + (window - used);
+    IF end_page > pager.last_page; end_page = pager.last_page; END;
+    SET used = used + (end_page - pager.current_page);
+    IF used != (window * 2) && start_page != 1; start_page = start_page - 3; END;
+    IF start_page < 1; start_page = 1; END;
+  %]
+  [% FOREACH page IN [ start_page .. end_page ] %]
+    [% IF page > pager.last_page; LAST; END %]
+    [% IF page == pager.current_page %]
+    <li>[% page %]</li>
+    [% ELSE %]
+    <li><a href="[% c.req.uri_with({ page => page }) %]">[% page %]</a></li>
+    [% END %]
+  [% END %]
+  [% IF pager.current_page < pager.last_page %]
+  <li class="last"><a href="[% c.req.uri_with({ page => pager.next_page }) %]">[% c.loc('Next') %]</a></li>
+  [% ELSE %]
+  <li class="last">[% c.loc('Next') %]</li>
+  [% END %]
+  <li class="last"><a href="[% c.req.uri_with({ page => pager.last_page }) %]"><img src="/static/images/actions/resultset_last.png"></a></li>
+ </ol>
+</div>

@@ -1,0 +1,3 @@
+<div class="media image">
+    <img src="[% media_uri %]" alt="[% asset.name %]" title="[% asset.title %]">
+</div>

@@ -1,4 +1,1 @@
-MediaMogul
-
-A (hopefully) simple application for storing, retrieving and managing media
-with full meta data and editable templates for returning read-to-use markup.
+Run script/mediamogul_server.pl to test the application.

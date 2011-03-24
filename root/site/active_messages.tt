@@ -1,0 +1,20 @@
+<div class="message">
+ [% FOREACH gpos IN active_messages.for_level('success').messages %]
+    <div class="gmessage" [% UNLESS gpos %]style="display: none"[% END %]>
+        <p>[% c.loc(gpos.msgid || gpos.text, gerr.params) %]</p>
+        <form class="confirm rest-delete" method="post" action="[% c.uri_for_action('/message/object', [ gpos.id ], { remove => 1 }) %]"><button class="action">[% c.loc("X") %]</button><div class="confirm-text">[% c.loc('Are you sure you want to remove this message?') %]</div></form>
+</div>
+ [% END %]
+ [% FOREACH gerr IN active_messages.for_level('error').messages %]
+    <div class="rmessage" [% UNLESS gerr %]style="display: none"[% END %]>
+        <p>[% c.loc(gerr.msgid || gerr.text, gerr.params) %][% IF gerr.subject %](<a href="[% c.uri_for_action('/asset/object', [ gerr.subject ]) %]">[% c.loc('View Record') %]</a>)[% ELSE %]<br>[% gerr.text %][% END %]</p>
+        <form class="confirm rest-delete" method="post" action="[% c.uri_for_action('/message/object', [ gerr.id ], { remove => 1 }) %]"><button class="action">[% c.loc("X") %]</button><div class="confirm-text">[% c.loc('Are you sure you want to remove this message?') %]</div></form>
+   </div>
+ [% END %]
+ [% FOREACH gwarn IN active_messages.for_level('warning').messages %]
+ 	<div class="omessage" [% UNLESS gwarn %]style="display: none"[% END %]>
+        <p>[% c.loc(gwarn.msgid || gwarn.text, gerr.params) %]</p>
+        <form class="confirm rest-delete" method="post" action="[% c.uri_for_action('/message/object', [ gwarn.id ], { remove => 1 }) %]"><button class="action">[% c.loc("X") %]</button><div class="confirm-text">[% c.loc('Are you sure you want to remove this message?') %]</div></form>
+    </div>
+ [% END %]
+</div>

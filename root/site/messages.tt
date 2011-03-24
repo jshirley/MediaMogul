@@ -1,0 +1,12 @@
+[%~ DEFAULT message_scope = 'global' ~%]
+<div class="message">
+ [% FOREACH gpos IN messages.for_scope(message_scope).for_level('success').messages %]
+    <div class="gmessage" [% UNLESS gpos %]style="display: none"[% END %]><p>[% c.loc(gpos.id || gpos.text) %]</p></div>
+ [% END %]
+ [% FOREACH gerr IN messages.for_scope(message_scope).for_level('error').messages %]
+    <div class="rmessage" [% UNLESS gerr %]style="display: none"[% END %]><p>[% c.loc(gerr.id || gerr.text) %]</p></div>
+ [% END %]
+ [% FOREACH gwarn IN messages.for_scope(message_scope).for_level('warning').messages %]
+ 	<div class="omessage" [% UNLESS gwarn %]style="display: none"[% END %]><p>[% c.loc(gwarn.id || gwarn.text) %]</p></div>
+ [% END %]
+</div>
