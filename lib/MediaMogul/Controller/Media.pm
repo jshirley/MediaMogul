@@ -51,10 +51,22 @@ sub root_POST {
     }
     my $values = $dm->data_for_scope('asset');
 
-    my $media = $c->model('Asset')->new($values);
+    my $media = $c->model('Asset')->find_one({ name => $values->{name} }) ||
+                $c->model('Asset')->new($values);
     unless ( $media ) {
         die "Failed creating media";
     }
+    if ( $media->has_mongo_id ) {
+        delete $values->{name}; 
+        foreach my $value ( keys %$values ) {
+            my $attr = $media->meta->get_attribute($value);
+            next unless defined $attr;
+            if ( my $writer = $attr->accessor ) {
+                $media->$writer( $values->{$value} );
+            }
+        }
+    }
+
     my $id = $media->store_file($file);
 
     my $object_uri = $c->uri_for_action('/media/manage_form', [ $media->name ]);
@@ -108,6 +120,7 @@ sub object_POST {
     $data->{update} = 1;
 
     my $file = $c->req->uploads->{file};
+
     if ( $file ) {
         $data->{filename}     = $file->filename;
         $data->{file}         = $file->tempname;
@@ -138,10 +151,10 @@ sub object_POST {
         }
     }
 
+    $media->store;
     if ( $file ) {
+        $c->log->debug("Storing file $file");
         $media->store_file($file);
-    } else {
-        $media->store;
     }
 
     my $object_uri = $c->uri_for_action('/media/manage_form', [ $media->name ]);

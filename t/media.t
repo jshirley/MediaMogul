@@ -120,6 +120,31 @@ $mech->content_contains(
     'embedded text has caption updated'
 );
 
+$caption = 'This is just a test later, that has been updated again.';
+# Posting to over-write and update.
+$resp = $mech->post(
+    "/media",
+    [
+        name => 'some-text',
+        caption => $caption,
+        file => [ File::Spec->catfile($FindBin::Bin, "data", "test2.txt") ],
+    ],
+    'Content_Type' => 'form-data'
+);
+
+ok($resp->is_success, 'upload text');
+
+$mech->get_ok("/media/some-text/embed", 'got embedded media');
+$mech->content_contains(
+    'This is updated content.  It has been reuploaded.',
+    'embedded text is updated'
+);
+
+$mech->content_contains(
+    $caption,
+    'embedded text has caption updated'
+);
+
 my $uri = URI->new('/media/some-text', 'http');
    $uri = $mech->base ? URI->new_abs( $uri, $mech->base ) : URI->new( $uri );
 
@@ -131,4 +156,5 @@ ok(!$resp->is_success, "text upload doesn't exist");
 is($resp->status_line, '404 Not Found', 'not found');
 
 $user->delete;
+
 done_testing;
