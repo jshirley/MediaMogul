@@ -22,7 +22,7 @@ END;
   <meta name="keywords" content="[% page.keywords.join(',') %]">
   [% END %]
   <meta name="author" content="[% page.author %]">
-  <title>[% IF page.title %][% page.title %], [% END %][% c.loc('DOCUVENT APP') %]</title>
+  <title>[% IF page.title %][% page.title %], [% END %][% c.loc('MediaMogul') %]</title>
 [%
 # Add all javascript refs in page.head.scripts (see page.body.scripts)
 page.head.scripts = page.head.scripts.unique;
@@ -52,7 +52,7 @@ END;
   <![endif]-->
  </head>
  <body class="[% page.body.classes.join(' ') %]">
-  <div id="content">
+  <div class="wrapper">
     [% # Drop in the header if appropriate
     header %]
     [% content %]

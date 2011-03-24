@@ -25,7 +25,7 @@ __PACKAGE__->config(
     }
 );
 
-sub root_POST { 
+sub root_POST {
     my ( $self, $c ) = @_;
 
     my $data = $c->req->params;
@@ -94,13 +94,23 @@ sub root_GET {
 
 sub create_form : Chained('setup') PathPart('create') Args(0) { }
 
-sub object_setup : Chained('setup') PathPart('') CaptureArgs(1) { 
+sub object_setup : Chained('setup') PathPart('') CaptureArgs(1) {
     my ( $self, $c, $name ) = @_;
     my $asset = $c->model('Asset')->find_one({ name => $name });
     unless ( defined $asset ) {
         $c->detach('not_found');
     }
     $c->stash->{ $self->object_key } = $asset;
+}
+
+sub image : Chained('object_setup') PathPart('') CaptureArgs(0) {
+    my ( $self, $c ) = @_;
+    my $asset = $c->stash->{ $self->object_key };
+    unless ( $asset->media_type eq 'image' ) {
+        $c->res->status(400);
+        $c->res->body($c->loc("Media is not of type image, it is a [_1].", [ $asset->media_type ]));
+        $c->detach;
+    }
 }
 
 sub object_GET { 
@@ -161,7 +171,9 @@ sub object_POST {
 
     unless ( $c->req->looks_like_browser ) {
         $c->res->body('ok.'); # Some clients won't serialize ok. The serializer
-                              # should still work in this case.
+                              # should still work in this case and clobber
+                              # the ok (or return 'ok' in the case of no
+                              # matching content-type to serialize to.
         return $self->status_ok(
             $c,
             entity   => $media->pack

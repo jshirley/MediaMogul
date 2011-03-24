@@ -176,7 +176,12 @@ sub not_found : Private {
         return $self->status_not_found($c, message => $c->loc("Not found"));
     }
 
-    $c->stash->{template} = $c->action->namespace . "/not_found.tt";
+    if ( $c->action->namespace =~ /^media/ ) {
+        # Don't render a template for the media controller
+        $c->res->body( $c->loc("Not found") );
+    } else {
+        $c->stash->{template} = $c->action->namespace . "/not_found.tt";
+    }
 }
 
 sub end : ActionClass('Serialize') { }

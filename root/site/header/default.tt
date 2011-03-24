@@ -1,5 +1,5 @@
 <div class="header">
- <a href="[% c.uri_for('/') %]">[% c.loc('Home') %]</a>
+    <h1><a href="[% c.uri_for('/') %]">[% c.loc('Home') %]</a></h1>
 </div>
 [% IF messages.for_scope('sidebar').has_messages;
     PROCESS "site/messages.tt", message_scope => 'sidebar';

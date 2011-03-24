@@ -37,7 +37,8 @@ DEFAULT page.language = c.config.language || 'en';
 DEFAULT page.head             = {};
 DEFAULT page.head.stylesheets = [
     'http://yui.yahooapis.com/combo?3.3.0/build/cssfonts/fonts-min.css&3.3.0/build/cssreset/reset-min.css&3.3.0/build/cssgrids/grids-min.css',
-    'screen.css'
+    'http://fonts.googleapis.com/css?family=Droid+Sans:bold',
+    'screen.css',
 ];
 DEFAULT page.head.scripts     = [];
 DEFAULT page.body             = {};

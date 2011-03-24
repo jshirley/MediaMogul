@@ -5,6 +5,8 @@ use Test::More;
 use HTTP::Request;
 use Test::WWW::Mechanize::Catalyst;
 
+use Imager;
+
 use_ok('MediaMogul::User');
 
 my $user = MediaMogul::User->new(
@@ -71,6 +73,53 @@ $resp = $mech->request( HTTP::Request->new( DELETE => $uri ) );
 ok($resp->is_success, 'delete key ok');
 
 $resp = $mech->get("/media/override-key");
+ok(!$resp->is_success, "media doesn't exist");
+is($resp->status_line, '404 Not Found', 'not found');
+
+$mech->get_ok("/media");
+my $resp = $mech->post(
+    "/media",
+    [
+        name => 'transform-png',
+        file => [ File::Spec->catfile($FindBin::Bin, "data", "test2.png") ],
+    ],
+    'Content_Type' => 'form-data'
+);
+
+$mech->get_ok('/media/transform-png/image/transform', 'null transform ok');
+cmp_ok(length($mech->content), '==', 176, 'no transform returns original');
+
+$mech->get_ok('/media/transform-png/image/transform?scale=ypixels:30,xpixels:5,qtype:mixing,type:min', 'scale transform ok');
+my $image = Imager->new( data => $mech->content );
+isa_ok($image, 'Imager', 'got imager from content');
+cmp_ok($image->getwidth, '==', 5, 'right width');
+cmp_ok($image->getheight, '==', 5, 'right height');
+
+$mech->get_ok('/media/transform-png/image/transform?scale=ypixels:30,xpixels:5,qtype:mixing,type:max', 'scale transform ok');
+my $image = Imager->new( data => $mech->content );
+isa_ok($image, 'Imager', 'got imager from content');
+cmp_ok($image->getwidth, '==', 30, 'right width');
+cmp_ok($image->getheight, '==', 30, 'right height');
+
+$mech->get_ok('/media/transform-png/image/transform?rotate=degrees:50', 'rotate transform ok');
+my $image = Imager->new( data => $mech->content );
+isa_ok($image, 'Imager', 'got imager from content');
+cmp_ok($image->getwidth, '==', 70, 'right width');
+cmp_ok($image->getheight, '==', 70, 'right height');
+
+$mech->get_ok('/media/transform-png/image/transform?scale=ypixels:300,xpixels:300&rotate=degrees:50', 'rotate and scale transform ok');
+my $image = Imager->new( data => $mech->content );
+isa_ok($image, 'Imager', 'got imager from content');
+cmp_ok($image->getwidth, '==', 300, 'right width');
+cmp_ok($image->getheight, '==', 300, 'right height');
+
+my $uri = URI->new('/media/transform-png', 'http');
+   $uri = $mech->base ? URI->new_abs( $uri, $mech->base ) : URI->new( $uri );
+
+$resp = $mech->request( HTTP::Request->new( DELETE => $uri ) );
+ok($resp->is_success, 'delete key ok');
+
+$resp = $mech->get("/media/transform-png");
 ok(!$resp->is_success, "media doesn't exist");
 is($resp->status_line, '404 Not Found', 'not found');
 
