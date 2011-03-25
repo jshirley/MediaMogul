@@ -28,7 +28,15 @@ The root page (/)
 
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
+    if ( $c->user_exists ) {
+        $c->res->redirect($c->uri_for_action('media/root'));
+    } else {
+        $c->res->redirect($c->uri_for_action('authentication/login'));
+        $c->message($c->loc('Login to get started.'));
+    }
 }
+
+sub guide :Path('guide') :Args(0) { }
 
 sub setup : Chained('/') PathPart('') CaptureArgs(0) {
     my ( $self, $c ) = @_;

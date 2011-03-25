@@ -1,0 +1,11 @@
+<form>
+    <fieldset>
+        [% text_field({ label => c.loc('A Text Field'), name => 'text_field', value => 'With some text', required => 1 }) %]
+        [% text_field({ label => c.loc('A Text Field'), name => 'text_field', value => 'With some text', error => 'Oh no, an error' }) %]
+        [% readonly_field({ label => c.loc('Readonly Field'), value => 'With some text' }) %]
+        [% readonly_field({ label => c.loc('Readonly Field'), value => 'With some text', more => 'some more text' }) %]
+        [% readonly_field({ label => c.loc('Readonly Field'), value => 'With some text', extra => 'some extra text' }) %]
+        [% readonly_field({ label => c.loc('Readonly Field'), value => 'With some text', extra => 'some extra text', more => 'some more text' }) %]
+        [% submit_button({ label => c.loc('Save') }) %]
+    </fieldset>
+</form>

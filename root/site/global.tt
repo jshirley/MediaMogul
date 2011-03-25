@@ -14,6 +14,13 @@ END %]
     END;
 END %]
 
+[% MACRO submit_button(info) BLOCK %]
+<div class="field yui3-g submit-group">
+    <div class="yui3-u-1-2">&nbsp;</div>
+    <div class="yui3-u-1-2"><input type="submit" value="[% info.label %]" name="[% info.name %]"></div>
+</div>
+[% END %]
+
 [% MACRO label_field(info) BLOCK;
     IF !info.error && stack && stack.count;
         error_name = info.name;
@@ -22,40 +29,37 @@ END %]
         END;
         info.error = c.loc( stack.for_subject(error_name).for_level('error').first_message.id );
  END %]
-<tr>
- <th [% IF info.error %]class="error"[% END %]>
-  [% IF info.important %]<strong>[% END %]
-  <label id="form_[% info.name %]_label" for="form_[% info.name %]">[% c.loc(info.label, info.params) ~%]
-   [%~ IF info.tooltip %]<script type="text/javascript">new YAHOO.widget.Tooltip('tt_[% info.name %]_label', { context: 'form_[% info.name %]_label', text: "[% info.tooltip | replace('"', '\"') %]" } );</script>[?][% END ~%]
-   :
-  </label>
-  [% IF info.important %]</strong>[% END %]
- </th>
+    <label class="yui3-u-1-4[% IF info.error %] error[% END; IF info.important %] important[% END %]" id="form_[% info.name %]_label" for="form_[% info.name %]"><span>[% c.loc(info.label, info.params) ~%]
+    [%~ IF info.tooltip %]<script type="text/javascript">new YAHOO.widget.Tooltip('tt_[% info.name %]_label', { context: 'form_[% info.name %]_label', text: "[% info.tooltip | replace('"', '\"') %]" } );</script>[?][% END ~%]:</span>
+    </label>
 [% END %]
 
 [% MACRO readonly_field(info) BLOCK %]
+<div class="field yui3-g">
  [% label_field(info) %]
-<td class="ro [%~ IF info.extra || info.error %] message [% END ~%][%~ IF info.error %] error[% END %]">
- <input type="hidden" id="form_[% info.name %]" name="[% info.name %]" value="[% info.value | html %]"/>
- [%~ IF info.link %]<a href="[% info.link %]">[%~ END ~%]
- [% info.value %]
- [%~ IF info.link ~%]</a>[%~ END ~%]
-</td>
-<td class="more">[% c.loc(info.more) %]</td>
-</tr>
-[% IF info.error || info.extra %]
-<tr>
- <td>&nbsp;</td>
- <td class="[%~ IF info.error %] error[% END %] [% IF info.error || info.extra %] message[% END %]" colspan="2">
- [% IF info.error %]
- <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
- [% ELSIF info.extra %]
- <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
+ <div class="yui3-u-1-2 ro [%~ IF info.extra || info.error %] message [% END ~%][%~ IF info.error %] error[% END %]">
+  <input type="hidden" id="form_[% info.name %]" name="[% info.name %]" value="[% info.value | html %]"/>
+  [%~ IF info.link %]<a href="[% info.link %]">[%~ END ~%]
+  [% info.value %]
+  [%~ IF info.link ~%]</a>[%~ END ~%]
+ </div>
+ [% IF info.more %]<div class="yui3-u-1-4 more">[% c.loc(info.more) %]</div>[% END %]
+ [% IF info.error || info.extra %]
+ <div class="yui3-g [% =%]
+    [% IF info.error %]error[% END %]
+    [% IF info.extra %]extra[% END ~%]
+    ">
+    <div class="yui3-u-1-4">&nbsp;</div>
+    [% IF info.error %]
+    <div class="rmessage yui3-u-3-4"><p>[% c.loc(info.error) %]</p></div>
+    [% END;
+    IF info.extra %]
+    <div class="gmessage yui3-u-3-4"><p>[% c.loc(info.extra) %]</p></div>
+    [% END %]
+ </div>
  [% END %]
- </td>
-</tr>
+</div>
 [% END %]
-[% END; %]
 
 [% MACRO select_field(info) BLOCK;
     IF !info.value && results.${context.scope};
@@ -138,8 +142,9 @@ END %]
         TRY; info.value = FILTER $f; info.value; END; CATCH; ""; END;
     END;
  %]
+<div class="field yui3-g">
  [% label_field(info) %]
- <td class="[%~ IF info.error %] error[%~ END ~%]">
+ <div class="yui3-u-1-2 [% info.type || 'text' %] [%~ IF info.extra || info.error %] message [% END ~%][%~ IF info.error %] error[% END %]">
   <input type="[% info.type || 'text' %]" id="form_[% info.name %]" name="[% info.name %]"
    [% IF info.pattern %] pattern="[% info.pattern %]" [% END %]
    value="[% info.value | html %]"
@@ -151,21 +156,23 @@ END %]
    [%~ IF info.tabindex %] tabindex="[% info.tabindex %]"[% END ~%]
    [%~ IF info.maxlength %] maxlength="[% info.maxlength %]"[% END ~%]>
    [% IF info.required %]<span class="req">[% c.loc('FIELD REQUIRED SPLAT') %]</span>[% END %]
- </td>
- <td class="more">[% c.loc(info.more) %]</td>
-</tr>
-[% IF info.error || info.extra %]
-<tr>
- <td>&nbsp;</td>
- <td class="[%~ IF info.error %] error[% END %] [% IF info.error || info.extra %] message[% END %]" colspan="2">
-   [% IF info.error %]
-   <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
-   [% ELSIF info.extra %]
-   <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
-   [% END %]
- </td>
-</tr>
-[% END %]
+ </div>
+ [% IF info.more %]<div class="yui3-u-1-4 more">[% c.loc(info.more) %]</div>[% END %]
+ [% IF info.error || info.extra %]
+ <div class="yui3-g [% =%]
+    [% IF info.error %]error[% END %]
+    [% IF info.extra %]extra[% END ~%]
+    ">
+    <div class="yui3-u-1-4">&nbsp;</div>
+    [% IF info.error %]
+    <div class="rmessage yui3-u-3-4"><p>[% c.loc(info.error) %]</p></div>
+    [% END;
+    IF info.extra %]
+    <div class="gmessage yui3-u-3-4"><p>[% c.loc(info.extra) %]</p></div>
+    [% END %]
+ </div>
+ [% END %]
+</div>
 [% END %]
 
 [% MACRO textarea_field(info) BLOCK;

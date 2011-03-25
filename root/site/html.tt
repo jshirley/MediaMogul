@@ -56,10 +56,6 @@ END;
     [% # Drop in the header if appropriate
     header %]
     [% content %]
-  </div>
-  <script type="text/javascript">
-    var preferences_uri = "XX";
-  </script>
   [% footer;
   
     # Add footer scripts
@@ -73,5 +69,6 @@ END;
     [%
     END;
     %]
+  </div>
  </body>
 </html>

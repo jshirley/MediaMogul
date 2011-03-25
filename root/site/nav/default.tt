@@ -1,3 +1,11 @@
 <div class="nav">
-    Navigation
+    <ul>
+        [% IF c.user_exists %]
+        <li><a href="[% c.uri_for_action('authentication/logout') %]">[% c.loc('Logout') %]</a></li>
+        <li><a href="[% c.uri_for_action('media/root') %]">[% c.loc('Media') %]</a></li>
+        <li><a href="[% c.uri_for_action('admin/site/root') %]">[% c.loc('Site Profiles') %]</a></li>
+        [% ELSE %]
+        <li><a href="[% c.uri_for_action('authentication/login') %]">[% c.loc('Login') %]</a></li>
+        [% END %]
+    </ul>
 </div>
