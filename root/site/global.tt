@@ -46,16 +46,18 @@ END %]
  [% IF info.more %]<div class="yui3-u-1-4 more">[% c.loc(info.more) %]</div>[% END %]
  [% IF info.error || info.extra %]
  <div class="yui3-g [% =%]
-    [% IF info.error %]error[% END %]
-    [% IF info.extra %]extra[% END ~%]
+    [%= IF info.error =%]error[%= END =%]
+    [%= IF info.extra =%]extra[%= END ~%]
     ">
     <div class="yui3-u-1-4">&nbsp;</div>
-    [% IF info.error %]
-    <div class="rmessage yui3-u-3-4"><p>[% c.loc(info.error) %]</p></div>
-    [% END;
-    IF info.extra %]
-    <div class="gmessage yui3-u-3-4"><p>[% c.loc(info.extra) %]</p></div>
-    [% END %]
+    <div class="yui3-u-3-4">
+        [% IF info.error %]
+        <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
+        [% END;
+        IF info.extra %]
+        <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
+        [% END %]
+    </div>
  </div>
  [% END %]
 </div>
@@ -68,9 +70,10 @@ END %]
         info.value = results.${context.scope}.get_original_value(value_name);
     END;
 %]
+<div class="field yui3-g">
 [%~ IF info.dynamic_array =%]<script type="text/javascript">if ( typeof dynamic_forms === 'undefined' ) dynamic_forms = {}; dynamic_forms['[% info.value_from %]'] = { 'source': '[% info.dynamic_array %]', 'update': '[% info.name %]', 'value': "[% info.value || html %]" };</script>[% IF info.array.size == 0; info.array.push(c.loc('Please select [_1]', [ info.value_from ] ) ); END; END %]
  [% label_field(info) %]
- <td class="[%~ IF info.extra || info.error %] message [% END ~%][%~ IF info.error %] error [%~ END ~%]">
+ <div class="yui3-u-1-2 select [%~ IF info.extra || info.error %] message [% END ~%][%~ IF info.error %] error[% END %]">
   <select id="form_[% info.name %]" name="[% info.name %]"
    [% IF info.classes %] class="[% info.classes.join(' ') %]"[%~ END ~%]>
    [% IF info.disabled %] disabled="disabled"[%~ END ~%]>
@@ -93,12 +96,12 @@ END %]
       [% END %]
         </optgroup>
       [% ELSE;
-        IF info.value_method;
+        IF info.defined('value_method');
           SET this_value = item.${info.value_method};
         ELSE;
           SET this_value = item;
         END;
-        IF info.label_method;
+        IF info.defined('label_method');
           SET this_name = item.${info.label_method};
         ELSE;
           SET this_name = item;
@@ -108,22 +111,26 @@ END %]
    [% END %]
   </select>
   [% IF info.required %]<span class="req">[% c.loc('FIELD REQUIRED SPLAT') %]</span>[% END %]
- </td>
- <td class="more">[% c.loc(info.more) %]</td>
-</tr>
-[% IF info.error || info.extra %]
-<tr>
- <td>&nbsp;</td>
- <td class="[%~ IF info.error %] error[% END %] [% IF info.error || info.extra %] message[% END %]" colspan="2">
-   [% IF info.error %]
-   <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
-   [% ELSIF info.extra %]
-   <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
-   [% END %]
- </td>
-</tr>
-[% END %]
-[% END %]
+ </div>
+ [% IF info.more %]<div class="yui3-u-1-4 more">[% c.loc(info.more) %]</div>[% END %]
+ [% IF info.error || info.extra %]
+ <div class="yui3-g [% =%]
+    [%= IF info.error =%]error[%= END =%]
+    [%= IF info.extra =%]extra[%= END ~%]
+    ">
+    <div class="yui3-u-1-4">&nbsp;</div>
+    <div class="yui3-u-3-4">
+        [% IF info.error %]
+        <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
+        [% END;
+        IF info.extra %]
+        <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
+        [% END %]
+    </div>
+ </div>
+ [% END %]
+</div>
+[% END; %]
 
 [% MACRO text_field(info) BLOCK;
     IF !info.value && results.${context.scope};
@@ -160,16 +167,18 @@ END %]
  [% IF info.more %]<div class="yui3-u-1-4 more">[% c.loc(info.more) %]</div>[% END %]
  [% IF info.error || info.extra %]
  <div class="yui3-g [% =%]
-    [% IF info.error %]error[% END %]
-    [% IF info.extra %]extra[% END ~%]
+    [%= IF info.error =%]error[%= END =%]
+    [%= IF info.extra =%]extra[%= END ~%]
     ">
     <div class="yui3-u-1-4">&nbsp;</div>
-    [% IF info.error %]
-    <div class="rmessage yui3-u-3-4"><p>[% c.loc(info.error) %]</p></div>
-    [% END;
-    IF info.extra %]
-    <div class="gmessage yui3-u-3-4"><p>[% c.loc(info.extra) %]</p></div>
-    [% END %]
+    <div class="yui3-u-3-4">
+        [% IF info.error %]
+        <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
+        [% END;
+        IF info.extra %]
+        <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
+        [% END %]
+    </div>
  </div>
  [% END %]
 </div>
@@ -188,8 +197,9 @@ END %]
     END;
 
 %]
-[% label_field(info) %]
- <td class="[%~ IF info.extra || info.error %] message [% END %][%~ IF info.error %] error[% END %]">
+<div class="field yui3-g">
+ [% label_field(info) %]
+ <div class="yui3-u-1-2 textarea [%~ IF info.extra || info.error %] message [% END ~%][%~ IF info.error %] error[% END %]">
   <textarea [%= ~%]
    id="form_[% info.name %]" name="[% info.name %]"
    [% IF info.hint               %] placeholder="[% c.loc(info.hint) %]"[% END %]
@@ -201,66 +211,73 @@ END %]
    [%~ info.value | html ~%]
   </textarea>
   [% IF info.required %]<span class="req">[% c.loc('FIELD REQUIRED SPLAT') %]</span>[% END %]
- </td>
- <td class="more">[% c.loc(info.more) %]</td>
-</tr>
-[% IF info.error || info.extra %]
-<tr>
- <td>&nbsp;</td>
- <td class="[%~ IF info.error %] error[% END %] [% IF info.error || info.extra %] message[% END %]" colspan="2">
-   [% IF info.error %]
-   <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
-   [% ELSIF info.extra %]
-   <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
-   [% END %]
- </td>
-</tr>
-[% END %]
+ </div>
+ [% IF info.more %]<div class="yui3-u-1-4 more">[% c.loc(info.more) %]</div>[% END %]
+ [% IF info.error || info.extra %]
+ <div class="yui3-g [% =%]
+    [%= IF info.error =%]error[%= END =%]
+    [%= IF info.extra =%]extra[%= END ~%]
+    ">
+    <div class="yui3-u-1-4">&nbsp;</div>
+    <div class="yui3-u-3-4">
+        [% IF info.error %]
+        <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
+        [% END;
+        IF info.extra %]
+        <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
+        [% END %]
+    </div>
+ </div>
+ [% END %]
+</div>
 [% END; %]
 
-[% MACRO checkboxes_field(info) BLOCK; %]
+[% MACRO checkboxes_field(info) BLOCK %]
+<div class="field yui3-g">
  [% label_field(info) %]
- <td class="[%~ IF info.extra || info.error ~%] message [%~ END ~%][%~ IF info.error %] error [%~ END ~%]">
+ <div class="yui3-u-1-2 checkboxes [%~ IF info.extra || info.error %] message [% END ~%][%~ IF info.error %] error[% END %]">
   <fieldset class="cwrap">
-   [% IF info.default_option %]<option value="[% info.default_option.0 | html %]">[% info.default_option.1 %]</option>[% END %]
    [% FOREACH item = info.array; 
      IF !c.tt_blessed(item) && item.keys %]
      [% FOREACH this_name = item.values.0;
         SET this_value = item.keys.0;
-        %]<label><input type="checkbox" name="[% info.name %]" value="[% this_value | html %]"[% IF info.selected.${this_value}.defined %] checked="checked"[% END %]>[% this_name %]</label>
+        %]<label><input type="[% info.type || 'checkbox' %]" name="[% info.name %]" value="[% this_value | html %]"[% IF info.selected.${this_value}.defined %] checked="checked"[% END %]>[% this_name %]</label>
       [% END %]
       [% ELSE;
-        IF info.value_method;
+        IF info.defined('value_method');
           SET this_value = item.${info.value_method};
         ELSE;
           SET this_value = item;
         END;
-        IF info.label_method;
+        IF info.defined('value_method');
           SET this_name = item.${info.label_method};
         ELSE;
           SET this_name = item;
         END;
-      %]<label><input type="checkbox" name="[% info.name %]" value="[% this_value | html %]"[% IF info.selected.${this_value}.defined %] checked="checked"[% END %]> [% this_name %]</label>
+      %]<label><input type="[% info.type || 'checkbox' %]" name="[% info.name %]" value="[% this_value | html %]"[% IF info.value == this_value || info.selected.defined(this_value) %] checked="checked"[% END %]> [% this_name %]</label>
      [% END %]
    [% END %]
   </fieldset>
   [% IF info.required %]<span class="req">[% c.loc('FIELD REQUIRED SPLAT') %]</span>[% END %]
- </td>
- <td class="more">[% c.loc(info.more) %]</td>
-</tr>
-[% IF info.error || info.extra %]
-<tr>
- <td>&nbsp;</td>
- <td class="[%~ IF info.error %] error[% END %] [% IF info.error || info.extra %] message[% END %]" colspan="2">
-   [% IF info.error %]
-   <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
-   [% ELSIF info.extra %]
-   <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
-   [% END %]
- </td>
-</tr>
-[% END %]
-	
+ </div>
+ [% IF info.more %]<div class="yui3-u-1-4 more">[% c.loc(info.more) %]</div>[% END %]
+ [% IF info.error || info.extra %]
+ <div class="yui3-g [% =%]
+    [%= IF info.error =%]error[%= END =%]
+    [%= IF info.extra =%]extra[%= END ~%]
+    ">
+    <div class="yui3-u-1-4">&nbsp;</div>
+    <div class="yui3-u-3-4">
+        [% IF info.error %]
+        <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
+        [% END;
+        IF info.extra %]
+        <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
+        [% END %]
+    </div>
+ </div>
+ [% END %]
+</div>
 [% END; %]
 
 [% MACRO checkbox_field(info) BLOCK;
@@ -278,25 +295,30 @@ END %]
         info.error = c.loc( messages.for_subject(error_name).for_level('error').first_message.id );
     END;
 %]
- <td>&nbsp;</td>
- <td class="checkbox [%~ IF info.extra || info.error %] message [% END ~%][%~ IF info.error %] error [% END %]">
+<div class="field yui3-g">
+ <div class="yui3-u-1-4">&nbsp;</div>
+ <div class="yui3-u-1-2 checkbox [%~ IF info.extra || info.error %] message [% END ~%][%~ IF info.error %] error[% END %]">
   <label><input type="checkbox" name="[% info.name %]"
         [%~ IF info.value =%] value="[% info.value %]"[% END ~%]
         [%~ IF info.checked =%] checked="checked"[% END ~%]
   > [% c.loc(info.label, info.params) %]</label>
- </td>
- <td class="more">[% c.loc(info.more) %]</td>
-</tr>
-[% IF info.error || info.extra %]
-<tr>
- <td>&nbsp;</td>
- <td class="[%~ IF info.error %] error[% END %] [% IF info.error || info.extra %] message[% END %]" colspan="2">
-   [% IF info.error %]
-   <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
-   [% ELSIF info.extra %]
-   <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
-   [% END %]
- </td>
-</tr>
+ </div>
+ [% IF info.more %]<div class="yui3-u-1-4 more">[% c.loc(info.more) %]</div>[% END %]
+ [% IF info.error || info.extra %]
+ <div class="yui3-g [% =%]
+    [%= IF info.error =%]error[%= END =%]
+    [%= IF info.extra =%]extra[%= END ~%]
+    ">
+    <div class="yui3-u-1-4">&nbsp;</div>
+    <div class="yui3-u-3-4">
+        [% IF info.error %]
+        <div class="rmessage"><p>[% c.loc(info.error) %]</p></div>
+        [% END;
+        IF info.extra %]
+        <div class="gmessage"><p>[% c.loc(info.extra) %]</p></div>
+        [% END %]
+    </div>
+ </div>
+ [% END %]
+</div>
 [% END %]
-[% END; %]

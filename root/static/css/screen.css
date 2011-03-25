@@ -7,7 +7,7 @@ html, body {
     margin: 0; padding: 0;
     height: 100%; min-height: 100%;
 }
-div.wrapper { padding-bottom: 150px; }
+div.wrapper { min-height: 100%; position: relative; }
 div.header {
     background: #e5e5d4 url('images/header_back.png') repeat-x;
     height: 72px;
@@ -53,16 +53,16 @@ body .header .nav ul li a {
     width: 8em;
     text-shadow: none;
 }
-body > .header > .nav ul li a:hover {
+body .header .nav ul li a:hover {
     padding: 5px 0 4px 0;
 }
-body > .header form {
+body .header form {
     position: absolute;
     right: 0;
     top: 3px;
     color: #fff;
 }
-body > .header form fieldset {
+body .header form fieldset {
     border: none;
     background: none;
     -moz-box-shadow: none;
@@ -70,16 +70,14 @@ body > .header form fieldset {
     box-shadow: none;
     padding: 0; margin: 30px 1em 0 0;
 }
-
+#content { padding: 0 0 150px 0; }
 div.footer {
     background: #f0eee4;
     text-align: center;
     width: 100%;
-    /*
-    position: absolute;
     height: 150px;
+    position: absolute;
     bottom: 0px;
-    */
 }
 div.footer div { padding: 1em 0 0 0; }
 h1, h2, h3, h4, h5, h6, legend {
@@ -208,16 +206,24 @@ strong {
     text-decoration: none;
 }
 
+
 fieldset {
     width: 600px;
     line-height: 1.8em;
     margin: 2em 0;
 }
-
+fieldset legend { padding: 0 4em 0 4em; border-bottom: 1px solid #ccc; }
 fieldset label { text-align: right; font-weight: bold; }
 fieldset label span { padding-right: 1ex; }
+fieldset .error label,
+fieldset label.error span { color: #b31f1e; }
+fieldset .error input,
+fieldset .error textarea {
+    /* Not sure what to style here */
+}
 
 fieldset .yui3-g { padding-top: 2px; }
+fieldset .yui3-g .yui3-g { padding-top: 1px; }
 fieldset .gmessage,
 fieldset .rmessage {
     -webkit-border-radius: 7px;
@@ -225,7 +231,7 @@ fieldset .rmessage {
     border-radius: 7px;
     color: #fff;
     font-size: 14px;
-    margin: 0 0 1em 0; padding: 0 0 0 0;
+    margin: 0 0 4px 0; padding: 0 0 0 0;
     overflow: hidden;
 
     background-color: #55aa2a;
@@ -263,3 +269,5 @@ fieldset textarea {
     width: 200px;
 }
 
+fieldset .cwrap { margin: 0; padding: 0; }
+fieldset .cwrap label { display: block; text-align: left; }
