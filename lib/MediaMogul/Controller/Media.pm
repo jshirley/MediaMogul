@@ -60,10 +60,8 @@ sub root_POST {
                 $data->{media_type} = $def->mediaType;
                 $data->{content_type} = "$def";
                 $file->type("$def"); # The client is a lie!
-                $c->log->debug("Remapping type from $ext to $def");
             }
         }
-        $c->log->debug("Mime type: $data->{media_type}");
         $data->{name} ||= $data->{filename};
     }
     my $dm      = $c->model('DataManager');
@@ -166,8 +164,23 @@ sub object_POST {
         $data->{filename}     = $file->filename;
         $data->{file}         = $file->tempname;
         $data->{content_type} = $file->type;
-        my $mime = MIME::Types->new->type( $file->type );
+        # XX This is the same as in root_POST, need to generalize this more
+        my $mt   = MIME::Types->new;
+        my $mime = $mt->type( $file->type );
         $data->{media_type} = defined $mime ? $mime->mediaType : 'image';
+        # Any application we're going to refine using the extension
+        if ( $data->{media_type} eq 'application' ) {
+            $data->{filename} =~ /\.(.*?)$/;
+            my $ext = $1;
+            if ( $ext ) {
+                my $def = $mt->mimeTypeOf($ext);
+                $data->{media_type} = $def->mediaType;
+                $data->{content_type} = "$def";
+                $file->type("$def"); # The client is a lie!
+            }
+        }
+        $data->{name} ||= $data->{filename};
+
     }
     my $dm      = $c->model('DataManager');
     my $results = $dm->verify('asset', $data);
