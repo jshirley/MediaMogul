@@ -106,7 +106,7 @@ sub root_GET {
 
     return if $c->req->looks_like_browser;
 
-    return $self->status_ok( $c, { entity => { results => $results } } );
+    return $self->status_ok( $c, { entity => { results => $results->pack } } );
 }
 
 sub create_form : Chained('setup') PathPart('create') Args(0) { }

@@ -46,7 +46,6 @@ sub search {
     );
 
     while ( my $row = $cursor->next ) {
-        use Data::Dumper; warn Dumper($row);
         my %data = ();
         foreach my $key ( keys %$row ) {
             next if $key =~ /^_/;
