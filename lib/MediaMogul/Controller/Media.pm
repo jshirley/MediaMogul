@@ -25,15 +25,17 @@ __PACKAGE__->config(
     }
 );
 
-has 'defaults_for_type' => (
+has 'profiles_by_type' => (
     is  => 'ro',
-    isa => 'HashRef[ArrayRef]',
+    isa => 'HashRef[HashRef[ArrayRef]]',
     default => sub { {
-        'image' => [ '/media/image/transform/root', { scale => 'ypixels:300,xpixels:300,type:min' } ],
+        'image' => {
+            'thumbnail' => [ '/media/image/transform/root', { scale => 'ypixels:300,xpixels:300,type:min' } ],
+        }
     } },
     traits => [ 'Hash' ],
     handles => {
-        'default_media_action' => 'get'
+        'get_profiles_for_type' => 'get'
     }
 );
 
@@ -268,13 +270,15 @@ sub display : Chained('object_setup') Args(0) {
 }
 
 sub generate_embed : Private {
-    my ( $self, $c, $asset ) = @_;
+    my ( $self, $c, $asset, $profile ) = @_;
 
     # Render the URL for the public facing
     my $media_uri = $c->uri_for_action('/media/display', [ $asset->name ]);
-    my $defaults  = $self->default_media_action($asset->media_type);
-    if ( $defaults ) {
-        $media_uri = $c->uri_for_action($defaults->[0], [ $asset->name ], $defaults->[1]);
+    if ( $profile ) {
+        my $profiles = $self->get_profiles_for_type($asset->media_type);
+        if ( $profiles and my $defaults = $profiles->{$profile} ) {
+            $media_uri = $c->uri_for_action($defaults->[0], [ $asset->name ], $defaults->[1]);
+        }
     }
     unless ( $c->debug and $c->config->{public_host} ) {
         $media_uri->host( $c->config->{public_host} );
@@ -308,7 +312,7 @@ sub manage_form : Chained('object_setup') PathPart('manage') Args(0) {
     my ( $self, $c ) = @_;
 
     my $asset = $c->stash->{ $self->object_key };
-    $c->forward('generate_embed', [ $asset ]);
+    $c->forward('generate_embed', [ $asset, 'thumbnail' ]);
 }
 
 
