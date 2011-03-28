@@ -25,6 +25,18 @@ __PACKAGE__->config(
     }
 );
 
+has 'defaults_for_type' => (
+    is  => 'ro',
+    isa => 'HashRef[ArrayRef]',
+    default => sub { {
+        'image' => [ '/media/image/transform/root', { scale => 'ypixels:300,xpixels:300,type:min' } ],
+    } },
+    traits => [ 'Hash' ],
+    handles => {
+        'default_media_action' => 'get'
+    }
+);
+
 sub root_POST {
     my ( $self, $c ) = @_;
 
@@ -45,8 +57,10 @@ sub root_POST {
             my $ext = $1;
             if ( $ext ) {
                 my $def = $mt->mimeTypeOf($ext);
-                $c->log->debug("Remapping type from $ext to $def");
                 $data->{media_type} = $def->mediaType;
+                $data->{content_type} = "$def";
+                $file->type("$def"); # The client is a lie!
+                $c->log->debug("Remapping type from $ext to $def");
             }
         }
         $c->log->debug("Mime type: $data->{media_type}");
@@ -245,6 +259,10 @@ sub generate_embed : Private {
 
     # Render the URL for the public facing
     my $media_uri = $c->uri_for_action('/media/display', [ $asset->name ]);
+    my $defaults  = $self->default_media_action($asset->media_type);
+    if ( $defaults ) {
+        $media_uri = $c->uri_for_action($defaults->[0], [ $asset->name ], $defaults->[1]);
+    }
     unless ( $c->debug and $c->config->{public_host} ) {
         $media_uri->host( $c->config->{public_host} );
     }
