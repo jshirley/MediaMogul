@@ -1,1 +1,9 @@
-<h1>Media Listing</h1>
+[%~
+
+~%]
+<h1>[% c.loc('Media Listing') %]</h1>
+[% FOREACH item IN results.items %]
+    [% IF loop.first %]<ul>[% END %]
+    <li><a href="[% c.uri_for_action('/media/manage_form', [ item.get_value('name') ]) %]">[% item.get_value('name') | html %]</a></li>
+    [% IF loop.last %]</ul>[% END %]
+[% END %]

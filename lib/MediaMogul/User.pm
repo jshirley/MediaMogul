@@ -6,6 +6,8 @@ use MooseX::Storage;
 use Try::Tiny;
 use Digest;
 
+use Data::Verifier;
+
 use namespace::clean -except => 'meta';
 
 with Storage(             # Implementations for these are in this dist, at:
@@ -79,6 +81,48 @@ sub _digest_hex {
     return $d->hexdigest;
 }
 
+has '_verifier' => (
+    is          => 'ro',
+    isa         => 'HashRef[Data::Verifier]',
+    lazy_build  => 1,
+    traits      => [ 'DoNotSerialize' ]
+);
+
+sub _build__verifier {
+    my ( $self ) = @_;
+
+    my $verifier = Data::Verifier->new(
+        filters => [ 'trim' ],
+        profile => {
+            username => {
+                type     => 'Str',
+                required => 1,
+            },
+            password => {
+                type     => 'Str',
+                required => 1,
+                dependent => {
+                    confirm_password => {
+                        type     => 'Str',
+                        required => 1,
+                    }
+                },
+                post_check => sub {
+                    my $r = shift;
+                    $r->get_value('password') eq $r->get_value('confirm_password');
+                }
+            },
+            permissions => {
+                type => 'HashRef',
+                coercion => Data::Verifier::coercion(
+                    from => 'ArrayRef',
+                    via  => sub { return { map { $_ => 1 } @$_ } }
+                )
+            }
+        }
+    );
+    return { user => $verifier };
+}
 
 
 =head1 LICENSE

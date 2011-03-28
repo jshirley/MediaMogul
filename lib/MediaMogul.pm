@@ -18,7 +18,7 @@ use Catalyst qw/
     ConfigLoader Static::Simple I18N
     Session Session::Store::FastMmap Session::State::Cookie
     Authentication
-
+    Params::Nested
     +MediaMogul::Plugin::Message
 /;
 
@@ -68,6 +68,24 @@ __PACKAGE__->apply_request_class_roles(qw/
 
 # Start the application
 __PACKAGE__->setup();
+
+=head1 CATALYST OVERRIDES
+
+=head2 get_session_id
+
+Fetch the SID from the query parameters in the case of uploads from the YUI
+(flash) uploader.
+
+=cut
+
+sub get_session_id {
+    my ( $c, @args ) = @_;
+
+    if ( my $sid = $c->request->query_parameters->{SID} ) {
+        return $sid;
+    }
+    return $c->maybe::next::method(@args);
+}
 
 
 =head1 NAME

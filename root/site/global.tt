@@ -16,8 +16,8 @@ END %]
 
 [% MACRO submit_button(info) BLOCK %]
 <div class="field yui3-g submit-group">
-    <div class="yui3-u-1-2">&nbsp;</div>
-    <div class="yui3-u-1-2"><input type="submit" value="[% info.label %]" name="[% info.name %]"></div>
+    <div class="yui3-u-1-4">&nbsp;</div>
+    <div class="yui3-u-3-4"><input type="submit" value="[% info.label %]" name="[% info.name %]"></div>
 </div>
 [% END %]
 
@@ -132,6 +132,8 @@ END %]
 </div>
 [% END; %]
 
+[% MACRO password_field(info) BLOCK; info.type = 'password'; text_field(info); END; %]
+
 [% MACRO text_field(info) BLOCK;
     IF !info.value && results.${context.scope};
         value_name = info.name;
@@ -207,6 +209,7 @@ END %]
    [%~ IF info.autocomplete == 0 %] autocomplete="false"[% END ~%]
    [%~ IF info.tabindex %] tabindex="[% info.tabindex %]"[% END ~%]
    [%~ IF info.rows %] rows="[% info.rows %]"[% END ~%]
+   [%~ IF info.cols %] cols="[% info.cols %]"[% END ~%]
    >
    [%~ info.value | html ~%]
   </textarea>

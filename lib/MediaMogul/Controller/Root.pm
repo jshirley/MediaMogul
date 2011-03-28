@@ -36,6 +36,21 @@ sub index :Path :Args(0) {
     }
 }
 
+sub crossdomain :Path('crossdomain.xml') :Args(0) { 
+    my ( $self, $c ) = @_;
+    # XX Figure out exactly what this should be
+    my $domain = $c->debug ? "*" : "*";
+    $c->res->content_type('application/xml');
+    $c->res->body(
+qq{<?xml version="1.0" ?>
+<cross-domain-policy>
+  <site-control permitted-cross-domain-policies="master-only"/>
+  <allow-access-from domain="$domain"/>
+  <allow-http-request-headers-from domain="$domain" headers="*"/>
+</cross-domain-policy>
+});
+}
+
 sub guide :Path('guide') :Args(0) { }
 
 sub setup : Chained('/') PathPart('') CaptureArgs(0) {

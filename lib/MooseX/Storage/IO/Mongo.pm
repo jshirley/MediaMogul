@@ -164,11 +164,17 @@ sub find_one {
     return undef;
 }
 
+sub query {
+    my ( $self, $attrs ) = @_;
+
+    my $col = $self->_get_mongo_collection;
+    return $col->find( $attrs );
+}
+
 sub find {
     my ( $self, $query ) = @_;
 
-    my $col     = $self->_get_mongo_collection;
-    my $results = $col->find( $query );
+    my $results = $self->query( $query );
     my @final   = ();
     foreach my $config ( $results->all ) {
         try { push @final, $self->thaw($config); }

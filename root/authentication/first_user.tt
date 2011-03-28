@@ -1,0 +1,11 @@
+<form method="post" action="[% c.uri_for_action('/authentication/first_user') %]">
+    <fieldset>
+        <legend>[% c.loc('First User Setup') %]</legend>
+        <p>[% c.loc('You must first register an admin account to use MediaMogul. Do this here, just takes a sec.') %]</p>
+        [% context.scope = 'user' %]
+        [% text_field({ label => c.loc('Username'), name => 'user.username', required => 1 }) %]
+        [% password_field({ label => c.loc('Password'), name => 'user.password', required => 1 }) %]
+        [% password_field({ label => c.loc('Confirm Password'), name => 'user.confirm_password', required => 1 }) %]
+        [% submit_button({ label => c.loc('Create Account') }) %]
+    </fieldset>
+</form>

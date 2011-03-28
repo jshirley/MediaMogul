@@ -25,6 +25,12 @@ Catalyst Controller.
 sub login : Chained('.') Args(0) {
     my ( $self, $c ) = @_;
 
+    my $count = $c->model('User')->query->count;
+    if ( $count == 0 ) {
+        $c->res->redirect($c->uri_for_action('/authentication/first_user'));
+        $c->detach;
+    }
+
     if ( $c->req->method eq 'POST' ) {
         my $data = $c->req->params;
         if ( $c->authenticate({ username => $data->{username}, password => $data->{password} }) ) {
@@ -54,6 +60,34 @@ sub login : Chained('.') Args(0) {
         }
         $c->message({ type => 'error', message => $c->loc('Invalid Login') });
         $c->res->redirect( $c->uri_for_action('/authentication/login') );
+        $c->detach;
+    }
+}
+
+sub first_user : Chained('.') Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $count = $c->model('User')->query->count;
+    if ( $count > 0 ) {
+        $c->res->redirect($c->uri_for_action('/authentication/login'));
+        $c->detach;
+    }
+
+    if ( $c->req->method eq 'POST' ) {
+        my $data = $c->req->params;
+           $data->{user}->{permissions} = [ '@admin' ];
+
+        my $dm   = $c->model('DataManager');
+        my $results = $dm->verify('user', $data->{user});
+        unless ( $results->success ) {
+            $c->res->redirect($c->uri_for_action($c->action));
+            $c->detach;
+        }
+        $c->log->_dump( $dm->data_for_scope('user') );
+        my $user = $c->model('User')->new( $dm->data_for_scope('user') );
+        $user->store;
+        $c->message($c->loc('User account created, you can login now!'));
+        $c->res->redirect($c->uri_for_action('/authentication/login'));
         $c->detach;
     }
 }

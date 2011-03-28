@@ -1,0 +1,27 @@
+[%~
+
+page.title = c.loc('Upload new media');
+page.body.scripts.push('upload.js');
+
+~%]
+<div id="files">
+    <table id="filenames" class="things">
+        <thead>
+            <tr><th>&nbsp;</th><th>Filename</th><th>File Size</th><th>Status</th></tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" id="uploaderContainer">
+                    <div id="uploaderOverlay" style="position:absolute; z-index:2"></div> 
+                    <div id="selectFilesLink" style="z-index:1"><a id="selectLink" href="#" class="button action">Select Files</a></div> 
+                    <a class="button action disabled" id="uploadLink" href="#">Upload Files</a>
+                </td>
+            </tr>
+        </tfoot>
+    </table>  
+</div>
+<script type="text/javascript">
+    upload_destination = '[% c.uri_for_action('/media/root', c.req.captures, { SID => c.sessionid }) %]';
+    progress_default_label = '[% c.loc("UPLOAD WAITING"); %]';
+</script>

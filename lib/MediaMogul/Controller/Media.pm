@@ -31,19 +31,33 @@ sub root_POST {
     my $data = $c->req->params;
     $data->{create} = 1;
 
-    my $file = $c->req->uploads->{file};
+    my $file = $c->req->uploads->{file} || $c->req->uploads->{Filedata};
     if ( $file ) {
         $data->{filename}     = $file->filename;
         $data->{file}         = $file->tempname;
         $data->{content_type} = $file->type;
-        my $mime = MIME::Types->new->type( $file->type );
+        my $mt   = MIME::Types->new;
+        my $mime = $mt->type( $file->type );
         $data->{media_type} = defined $mime ? $mime->mediaType : 'image';
+        # Any application we're going to refine using the extension
+        if ( $data->{media_type} eq 'application' ) {
+            $data->{filename} =~ /\.(.*?)$/;
+            my $ext = $1;
+            if ( $ext ) {
+                my $def = $mt->mimeTypeOf($ext);
+                $c->log->debug("Remapping type from $ext to $def");
+                $data->{media_type} = $def->mediaType;
+            }
+        }
+        $c->log->debug("Mime type: $data->{media_type}");
+        $data->{name} ||= $data->{filename};
     }
     my $dm      = $c->model('DataManager');
     my $results = $dm->verify('asset', $data);
 
     unless ( $results->success ) {
         unless ( $c->req->looks_like_browser ) {
+            $c->log->_dump($results);
             return $self->status_bad_request($c, message => $c->loc('Invalid request'));
         }
         $c->res->redirect($c->uri_for_action('/media/create_form'));
@@ -86,10 +100,13 @@ sub root_POST {
 
 sub root_GET {
     my ( $self, $c ) = @_;
+    
+    my $results = $c->model('Search')->search;
+    $c->stash->{results} = $results;
 
     return if $c->req->looks_like_browser;
 
-    return $self->status_ok( $c, { entity => { results => [] } } );
+    return $self->status_ok( $c, { entity => { results => $results } } );
 }
 
 sub create_form : Chained('setup') PathPart('create') Args(0) { }
@@ -216,15 +233,15 @@ sub display : Chained('object_setup') Args(0) {
     }
 
     $c->res->content_type( $data->info->{content_type} );
+    my $name = $media->name;
+        $name =~ s/"/&quot;/g;
+    $c->response->headers->header('Content-disposition:' =>
+        qq{attachment; filename="$name"} );
     $c->res->body( $data->slurp );
 }
 
-sub embed : Chained('object_setup') Args(0) {
-    my ( $self, $c ) = @_;
-
-    my $asset = $c->stash->{ $self->object_key };
-
-    $c->stash->{page}->{layout} = 'partial';
+sub generate_embed : Private {
+    my ( $self, $c, $asset ) = @_;
 
     # Render the URL for the public facing
     my $media_uri = $c->uri_for_action('/media/display', [ $asset->name ]);
@@ -245,11 +262,23 @@ sub embed : Chained('object_setup') Args(0) {
         $c->res->body($c->loc('No view for type: [_1].', [ $type ]));
     }
     $c->log->debug("Template is $template");
-    $c->stash->{template} = $template;
-    $c->forward( $c->view('Media') );
+    $c->stash->{embed_output} = $c->view('Media')->render($c, $template);
 }
 
-sub manage_form : Chained('object_setup') PathPart('manage') Args(0) { }
+sub embed : Chained('object_setup') Args(0) {
+    my ( $self, $c ) = @_;
+    my $asset = $c->stash->{ $self->object_key };
+    $c->forward('generate_embed', [ $asset ]);
+
+    $c->res->body($c->stash->{embed_output});
+}
+
+sub manage_form : Chained('object_setup') PathPart('manage') Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $asset = $c->stash->{ $self->object_key };
+    $c->forward('generate_embed', [ $asset ]);
+}
 
 
 no Moose;

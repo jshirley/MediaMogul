@@ -70,7 +70,7 @@ body .header form fieldset {
     box-shadow: none;
     padding: 0; margin: 30px 1em 0 0;
 }
-#content { padding: 0 0 150px 0; }
+#content { padding: 0 0 150px 0; width: 80%; min-width 960px; margin: 0 auto; }
 div.footer {
     background: #f0eee4;
     text-align: center;
@@ -165,6 +165,10 @@ strong {
 }
 
 /* messaging */
+div.message {
+    margin: 1em 0;
+}
+
 .message div {
     -webkit-border-radius: 7px;
     -moz-border-radius: 7px;

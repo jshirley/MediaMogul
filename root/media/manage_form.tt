@@ -1,0 +1,7 @@
+<h1>[% c.loc('Managing [_1]', [ asset.name ]) %]</h1>
+<fieldset>
+    [% textarea_field({ label => 'Embed Code', value => embed_output, rows => 6, cols => 20 }) %]
+</fieldset>
+
+<h3>[% c.loc('Preview') %]</h3>
+[% embed_output %]
