@@ -49,14 +49,29 @@ my $resp = $mech->post(
     "/media",
     [
         name => 'override-key',
+        file => [ File::Spec->catfile($FindBin::Bin, "data", "test.jpg") ],
+    ],
+    'Content_Type' => 'form-data'
+);
+ok($resp->is_success, 'able to upload now');
+
+$mech->get_ok("/media/override-key", 'got media');
+
+$mech->get_ok("/media/override-key/display", 'download media');
+is($mech->response->header('Content-type'), 'image/jpeg', 'correct content type');
+
+$resp = $mech->post(
+    "/media",
+    [
+        name => 'override-key',
         file => [ File::Spec->catfile($FindBin::Bin, "data", "test.png") ],
     ],
     'Content_Type' => 'form-data'
 );
+ok($resp->is_success, 'able to update now');
 
-ok($resp->is_success, 'able to upload now');
-
-$mech->get_ok("/media/override-key", 'got media');
+$mech->get_ok("/media/override-key/display", 'download media');
+is($mech->response->header('Content-type'), 'image/png', 'updated content type');
 
 $mech->get_ok('/media/override-key/embed', 'embed page ok');
 $mech->content_contains(

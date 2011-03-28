@@ -284,11 +284,13 @@ sub generate_embed : Private {
         $media_uri->host( $c->config->{public_host} );
     }
     $c->stash->{media_uri} = $media_uri;
-    my $profile  = $asset->template || 'default';
-    my $type     = $asset->media_type;
+
+    my $tmpl = $asset->template || 'default';
+    my $type = $asset->media_type;
+
     my $template;
-    if ( -f $c->path_to('templates', $type, "$profile.tt") ) {
-        $template = join('/', $type, "$profile.tt");
+    if ( -f $c->path_to('templates', $type, "$tmpl.tt") ) {
+        $template = join('/', $type, "$tmpl.tt");
     }
     elsif ( -f $c->path_to('templates', $type, "default.tt") ) {
         $template = join('/', $type, "default.tt");
