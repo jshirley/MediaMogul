@@ -7,22 +7,12 @@ use MooseX::Traits::Util;
 
 use Try::Tiny;
 
-use DateTime::Format::ISO8601;
-use DateTimeX::Easy;
+use DateTime;
 
 MooseX::Storage::Engine->add_custom_type_handler(
     'DateTime' => (
-        expand => sub {
-            my $date = shift;
-            my $parsed;
-            # First try rigid parsing
-            try   { $parsed = DateTime::Format::ISO8601->parse_datetime($date) }
-            # Then the slower attempt here.
-            catch { $parsed = DateTimeX::Easy->parse($date); };
-            die "Unable to parse date string '$date'" if not defined $parsed;
-            $parsed;
-        },
-        collapse => sub { (shift)->iso8601.'Z' }
+        expand   => sub { DateTime->from_epoch(shift) },
+        collapse => sub { (shift)->epoch },
     )
 );
 

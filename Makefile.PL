@@ -17,16 +17,32 @@ requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Action::REST';
 
 requires 'Catalyst::Plugin::Authentication';
+requires 'Catalyst::Plugin::Session';
+requires 'Catalyst::Plugin::Session::Store::FastMmap';
 requires 'Catalyst::Authentication::Store::FromSub';
+
+requires 'Catalyst::View::TT';
+requires 'Catalyst::View::JSON';
+requires 'namespace::autoclean';
+
+requires 'Config::JFDI';
+
+requires 'Data::Manager';
+requires 'Data::SearchEngine';
+requires 'DateTime';
+
+requires 'Imager';
+
+requires 'JSON';
+requires 'JSON::XS';
+
+requires 'LWP::UserAgent';
+
+requires 'MongoDB';
 
 requires 'Moose';
 requires 'MooseX::Storage';
-
-requires 'namespace::autoclean';
-
-requires 'Catalyst::View::TT';
-
-requires 'MongoDB';
+requires 'MooseX::Traits';
 
 requires 'YAML';
 

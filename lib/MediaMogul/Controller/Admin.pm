@@ -5,7 +5,6 @@ use Moose;
 BEGIN { extends 'MediaMogul::Base::Controller::REST::Mongo'; }
 
 use Scalar::Util 'blessed';
-use Hash::Diff qw(left_diff);
 
 use URI::Escape;
 
