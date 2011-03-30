@@ -1,0 +1,16 @@
+<h1>[% c.loc('About MediaMogul') %]</h1>
+
+<h2>MediaMogul is built using <a href="http://www.perl.org">Perl.</a></h2>
+
+<p>Yes, Perl. Perl works fantastically well. It's very modern, making heavy use of <a href="http://moose.ii.org">Moose</a>.  It stores everything in <a href="http://www.mongodb.org">MongoDB</a>.  MediaMogul does not have webscale. For that I would recommend putting Varnish in front of it.</p>
+
+<h2>Happily powered by <a href="http://www.catalystframework.org">Catalyst</a></h2>
+<p>All the web stuff is handled with <a href="http://www.catalystframework.org">Catalyst</a>. It's very RESTful. Seriously, just look at the unit tests.</p>
+
+<h2>It's not that web two point oh, but it is <a href="http://www.yuilibrary.org">YUI 3</a></h2>
+<p>For the fancy bells and whistles, we are reliant on <a href="http://www.yuilibrary.org">the best darn JS kit around</a>.  No, not jQuery. <a href="http://developer.yahoo.com/yui/3/">YUI 3</a>!</p>
+
+<h3>I &hearts; GitHub and Open Source</h3>
+<p>This entire application was built while I was watching my kids or by copying pieces of other <a href="http://www.coldhardcode.com/products">awesome products</a>.  There are probably bugs in MediaMogul. If there are, please submit <a href="https://github.com/jshirley/MediaMogul/issues">a bug report</a>.</p>
+
+
