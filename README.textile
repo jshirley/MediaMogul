@@ -53,6 +53,11 @@ Create a user (or your own user account) to run MediaMogul. Once you are logged 
 
 I recommend using Server::Starter and Plack (Starman). If you are going to use those, under the same account you are going to run MediaMogul as, run:
 
-    cpanm Starman Server::Starter Catalyst::Engine::PSGI
+    cpanm Starman Server::Starter Catalyst::Engine::PSGI Net::Server::SS::PreFork
 
-    
+This will get you a preforking server that you can throw Varnish in front of. Then it is quite easy to run the application:
+
+    cd MediaMogul
+    start_server --port 127.0.0.1:8080 -- starman --workers 8 script/mediamogul.psgi
+
+Now the app is running on port 8080. Go nuts!
