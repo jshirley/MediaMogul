@@ -13,16 +13,20 @@ requires 'Catalyst::Runtime' => '5.80030';
 
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';
+requires 'Catalyst::Plugin::Params::Nested';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Action::REST';
 
 requires 'Catalyst::Plugin::Authentication';
+requires 'Catalyst::Plugin::I18N';
 requires 'Catalyst::Plugin::Session';
 requires 'Catalyst::Plugin::Session::Store::FastMmap';
+requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Authentication::Store::FromSub';
 
 requires 'Catalyst::View::TT';
 requires 'Catalyst::View::JSON';
+requires 'CatalystX::RoleApplicator';
 requires 'namespace::autoclean';
 
 requires 'Config::JFDI';
@@ -30,6 +34,7 @@ requires 'Config::JFDI';
 requires 'Data::Manager';
 requires 'Data::SearchEngine';
 requires 'DateTime';
+requires 'DateTimeX::Easy';
 
 requires 'Imager';
 

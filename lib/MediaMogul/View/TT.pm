@@ -6,7 +6,7 @@ extends 'Catalyst::View::TT';
 
 use Scalar::Util qw(blessed);
 use DateTime;
-use DateTime::Format::DateParse;
+use DateTimeX::Easy;
 use Time::Duration qw(ago);
 
 __PACKAGE__->config({
