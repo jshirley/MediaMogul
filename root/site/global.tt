@@ -205,6 +205,7 @@ END %]
   <textarea [%= ~%]
    id="form_[% info.name %]" name="[% info.name %]"
    [% IF info.hint               %] placeholder="[% c.loc(info.hint) %]"[% END %]
+   [%~ IF info.classes %] class="[% info.classes.join(' ') %]"[% END ~%]
    [%~ IF info.disabled     == 1 %] disabled="disabled"[% END ~%]
    [%~ IF info.autocomplete == 0 %] autocomplete="false"[% END ~%]
    [%~ IF info.tabindex %] tabindex="[% info.tabindex %]"[% END ~%]

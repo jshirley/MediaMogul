@@ -26,7 +26,7 @@ $mech->get_ok("/media");
 my $resp = $mech->post(
     "/media",
     [
-        name => 'override-key',
+        'asset.name' => 'override-key',
         file => [ File::Spec->catfile($FindBin::Bin, "data", "test.txt") ],
     ],
     'Content_Type' => 'form-data'
@@ -48,7 +48,7 @@ $mech->get_ok("/media");
 my $resp = $mech->post(
     "/media",
     [
-        name => 'override-key',
+        'asset.name' => 'override-key',
         file => [ File::Spec->catfile($FindBin::Bin, "data", "test.jpg") ],
     ],
     'Content_Type' => 'form-data'
@@ -63,7 +63,7 @@ is($mech->response->header('Content-type'), 'image/jpeg', 'correct content type'
 $resp = $mech->post(
     "/media",
     [
-        name => 'override-key',
+        'asset.name' => 'override-key',
         file => [ File::Spec->catfile($FindBin::Bin, "data", "test.png") ],
     ],
     'Content_Type' => 'form-data'
@@ -95,7 +95,7 @@ $mech->get_ok("/media");
 my $resp = $mech->post(
     "/media",
     [
-        name => 'transform-png',
+        'asset.name' => 'transform-png',
         file => [ File::Spec->catfile($FindBin::Bin, "data", "test2.png") ],
     ],
     'Content_Type' => 'form-data'
@@ -143,8 +143,8 @@ my $caption = 'This is just a test at ' . time;
 $resp = $mech->post(
     "/media",
     [
-        name => 'some-text',
-        caption => $caption,
+        'asset.name' => 'some-text',
+        'asset.caption' => $caption,
         file => [ File::Spec->catfile($FindBin::Bin, "data", "test.txt") ],
     ],
     'Content_Type' => 'form-data'
@@ -168,8 +168,8 @@ $caption = 'This is just a test later, that has been updated';
 $mech->post_ok(
     "/media/some-text",
     {
-        name => 'some-text',
-        caption => $caption,
+        'asset.name' => 'some-text',
+        'asset.caption' => $caption,
     },
 );
 
@@ -189,8 +189,8 @@ $caption = 'This is just a test later, that has been updated again.';
 $resp = $mech->post(
     "/media",
     [
-        name => 'some-text',
-        caption => $caption,
+        'asset.name' => 'some-text',
+        'asset.caption' => $caption,
         file => [ File::Spec->catfile($FindBin::Bin, "data", "test2.txt") ],
     ],
     'Content_Type' => 'form-data'

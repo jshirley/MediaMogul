@@ -42,6 +42,13 @@ sub rotate : Private {
 sub scale : Private {
     my ( $self, $c, $opts ) = @_;
     my $image = $c->stash->{image};
+    $c->log->_dump($opts);
+    if ( my $y = $opts->{ypixels} and my $x = $opts->{xpixels} ) {
+        if ( $y > $image->getwidth and $x > $image->getwidth ) {
+            # Don't do anything if we're already too big.
+            return;
+        }
+    }
     $c->stash->{image} = $image->scale( %$opts );
 }
 

@@ -6,7 +6,7 @@
         [% IF c.user.permissions.defined('@admin') || c.user.permissions.defined('@upload_new') %]
         <li><a href="[% c.uri_for_action('media/create_form') %]">[% c.loc('Upload') %]</a></li>
         [% END %]
-        <li><a href="[% c.uri_for_action('admin/site/root') %]">[% c.loc('Site Profiles') %]</a></li>
+        <li><a href="[% c.uri_for_action('admin/profile/root') %]">[% c.loc('Media Profiles') %]</a></li>
         [% ELSE %]
         <li><a href="[% c.uri_for_action('authentication/login') %]">[% c.loc('Login') %]</a></li>
         [% END %]

@@ -107,6 +107,12 @@ sub _build__verifier {
     return { asset => $verifier };
 }
 
+sub as_results {
+    my ( $self ) = @_;
+    my ( $verifier ) = values %{ $self->_verifier };
+    return $verifier->verify( $self->pack );
+}
+
 sub store_file {
     my ( $self, $file ) = @_;
     my $gfs = $self->_get_mongo_database->get_gridfs;

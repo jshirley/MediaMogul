@@ -33,8 +33,11 @@ function(Y) {
         });
         fileList = [];
         for (var key in fileData) {
+            var name   = fileData[key].name;
+            var fIndex = fileList.length;
             var removeLink = "<a href=\"#" + key + "\" class=\"upload-action remove-file\">X</a>";
-            var output = "<tr><th>"+removeLink+"</th><td>" + fileData[key].name + "</td><td>" + fileData[key].size + "</td><td><div id='div_" + uploadIndex + '_' + fileData[key].id + "'></div></td></tr>\n";
+            var input = '<input type="hidden" name="file' + fIndex + '.id" value="' + encodeURIComponent(name) + '"><input type="text" name="file' + fIndex + '.name" value="' + name + '">';
+            var output = "<tr><th>"+removeLink+"</th><td>" + name + "</td><td>" + input + "</td><td>" + fileData[key].size + "</td><td><div id='div_" + uploadIndex + '_' + fileData[key].id + "'></div></td></tr>\n";
             tbody.append(output);
 
             var progressBar = new Y.ProgressBar({id:"pb_" + uploadIndex + '_' + fileData[key].id, layout : '<div class="{labelClass}"></div><div class="{sliderClass}"></div>'});
@@ -92,7 +95,23 @@ function(Y) {
 
     function uploadFile (event) {
         uploaded = 0;
-        uploader.uploadAll(upload_destination);
+        var args = {};
+        Y.log(fileList);
+        for ( var i = 0; i < fileList.length; i++ ) {
+            var id   = Y.one('#files input[name=file'+i+'.id]');
+            Y.log("Finding " + '#files input[name=file'+i+'.id] = ' + id);
+            var name = Y.one('#files input[name=file'+i+'.name]');
+            Y.log("Finding " + '#files input[name=file'+i+'.name] = ' + name);
+            if ( id && name ) {
+                args['file.' + id.get('value')] = name.get('value');
+            }
+        }
+        Y.log(args);
+        uploader.uploadAll(
+            upload_destination,
+            "POST",
+            args
+        );
     }
 
     function initUploader() {

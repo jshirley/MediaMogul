@@ -1,3 +1,7 @@
-<div class="media image">
+[%~
+caption = c.req.params.caption || asset.caption;
+~%]
+<div class="media image">[%~ ~%]
     <img src="[% media_uri %]" alt="[% asset.name | html %]" title="[% asset.name | html %]">
-</div>
+    [%~ IF caption ~%]<p>[% caption | html %]</p>[%~ END ~%]
+</div>[%~ ~%]

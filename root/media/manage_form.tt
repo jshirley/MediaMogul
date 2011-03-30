@@ -1,7 +1,25 @@
+[%~
+page.body.scripts.push('asset_manage.js');
+~%]
 <h1>[% c.loc('Managing [_1]', [ asset.name ]) %]</h1>
-<fieldset>
-    [% textarea_field({ label => 'Embed Code', value => embed_output, rows => 6, cols => 20 }) %]
-</fieldset>
+<div class="hidden" id="hidden_embed_code">[% embed_output %]</div>
+<div class="yui3-g">
+    <fieldset class="yui3-u-1-2">
+        [% textarea_field({ label => 'Embed Code', name => 'embed_code', value => embed_output, rows => 6, cols => 20, more => '<div class="clipboard-copy">Copy</div>' }) %]
+    </fieldset>
+    <div class="yui3-u-1-2">
+        <h3>[% c.loc('Preview') %]</h3>
+        [% embed_output %]
+    </div>
+</div>
 
-<h3>[% c.loc('Preview') %]</h3>
-[% embed_output %]
+<form method="post" action="[% c.uri_for_action('/media/object', [ asset.name ]) %]">
+    <fieldset>
+        <legend>[% c.loc('Edit Information') %]</legend>
+        [% context.scope = 'asset' %]
+        [% readonly_field({ label => 'Name', name => 'asset.name', value => asset.name }) %]
+        [% text_field({ label => 'Default Caption', name => 'asset.caption' }) %]
+        [% select_field({ label => 'Default Profile', name => 'asset.template', array => profiles, default_option => [ '', c.loc('Default [_1] view', [ asset.media_type ]) ] }) %]
+        [% submit_button({ label => 'Save' }) %]
+    </fieldset>
+</form>

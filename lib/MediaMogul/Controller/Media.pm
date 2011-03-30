@@ -31,6 +31,7 @@ has 'profiles_by_type' => (
     default => sub { {
         'image' => {
             'thumbnail' => [ '/media/image/transform/root', { scale => 'ypixels:300,xpixels:300,type:min' } ],
+            'blog' => [ '/media/image/transform/root', { scale => 'ypixels:500,xpixels:500,type:min' } ],
         }
     } },
     traits => [ 'Hash' ],
@@ -42,7 +43,8 @@ has 'profiles_by_type' => (
 sub root_POST {
     my ( $self, $c ) = @_;
 
-    my $data = $c->req->params;
+    my $data = $c->req->params->{asset} || {};
+    $data = {} unless ref $data eq 'HASH';
     $data->{create} = 1;
 
     my $file = $c->req->uploads->{file} || $c->req->uploads->{Filedata};
@@ -50,6 +52,10 @@ sub root_POST {
         $data->{filename}     = $file->filename;
         $data->{file}         = $file->tempname;
         $data->{content_type} = $file->type;
+
+        if ( my $new_key = $c->req->params->{'file.' . $data->{filename}} ) {
+            $data->{name} = $new_key;
+        }
         my $mt   = MIME::Types->new;
         my $mime = $mt->type( $file->type );
         $data->{media_type} = defined $mime ? $mime->mediaType : 'image';
@@ -78,7 +84,7 @@ sub root_POST {
         $c->detach;
     }
     my $values = $dm->data_for_scope('asset');
-
+    $c->log->_dump($values);
     my $media = $c->model('Asset')->find_one({ name => $values->{name} }) ||
                 $c->model('Asset')->new($values);
     unless ( $media ) {
@@ -123,6 +129,52 @@ sub root_GET {
     return $self->status_ok( $c, { entity => { results => $results->pack } } );
 }
 
+sub search : Chained('setup') Args(0) ActionClass('REST') {
+    my ( $self, $c ) = @_;
+    $c->req->content_type('application/json');
+
+    # Need to actually do the querying and what not here. Create a D::SE query
+    # object and pass it into Search.
+    my $results = $c->model('Search')->search;
+    my @sort    = ( 'name', 'desc' );
+
+    my $items = [
+        map {
+            my $values = $_->values;
+            $values->{actions} = {
+                $c->loc('Edit') => $c->uri_for_action('/media/manage_form', [ $values->{name} ])->as_string,
+            };
+            $values;
+        } @{ $results->items }
+    ];
+    return $self->status_ok(
+        $c,
+        {
+            entity => {
+                results => $items,
+                query   => '.*',
+                facets  => {},
+                filters => {},
+                pager   => {
+                    current_page     => $results->pager->current_page,
+                    entries_per_page => $results->pager->entries_per_page,
+                    total_entries    => $results->pager->total_entries,
+                    first_page       => $results->pager->first_page,
+                    last_page        => $results->pager->last_page,
+                    first            => $results->pager->first,
+                    last             => $results->pager->last,
+                },
+                sort => {
+                    lastSortedBy => $sort[0],
+                    direction    => $sort[1]
+                }
+
+            }
+        }
+    );
+}
+sub search_GET { }
+
 sub create_form : Chained('setup') PathPart('create') Args(0) { }
 
 sub object_setup : Chained('setup') PathPart('') CaptureArgs(1) {
@@ -157,7 +209,9 @@ sub object_GET {
 sub object_POST {
     my ( $self, $c ) = @_;
 
-    my $data = $c->req->params;
+    my $data = $c->req->params->{asset} || {};
+    $data = {} unless ref $data eq 'HASH';
+
     $data->{update} = 1;
 
     my $file = $c->req->uploads->{file};
@@ -305,7 +359,7 @@ sub generate_embed : Private {
 sub embed : Chained('object_setup') Args(0) {
     my ( $self, $c ) = @_;
     my $asset = $c->stash->{ $self->object_key };
-    $c->forward('generate_embed', [ $asset ]);
+    $c->forward('generate_embed', [ $asset, $c->req->params->{profile} ]);
 
     $c->res->body($c->stash->{embed_output});
 }
@@ -313,7 +367,11 @@ sub embed : Chained('object_setup') Args(0) {
 sub manage_form : Chained('object_setup') PathPart('manage') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $asset = $c->stash->{ $self->object_key };
+    my $asset   = $c->stash->{ $self->object_key };
+    my $results = $c->stash->{results}->{asset};
+    if ( not $results ) {
+        $c->stash->{results}->{asset} = $asset->as_results;
+    }
     $c->forward('generate_embed', [ $asset, 'thumbnail' ]);
 }
 

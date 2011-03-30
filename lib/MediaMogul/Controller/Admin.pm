@@ -28,7 +28,7 @@ sub root_POST { }
 
 sub manage_form : Chained('setup') PathPart('manage') Args(0) { }
 
-sub site : Chained('setup') PathPart('') CaptureArgs('0') { }
+sub profile : Chained('setup') PathPart('') CaptureArgs('0') { }
 
 no Moose;
 __PACKAGE__->meta->make_immutable; 1;

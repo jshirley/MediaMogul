@@ -164,6 +164,7 @@ strong {
     font-weight: bold;
 }
 
+.hidden { display: none; }
 /* messaging */
 div.message {
     margin: 1em 0;
@@ -275,3 +276,63 @@ fieldset textarea {
 
 fieldset .cwrap { margin: 0; padding: 0; }
 fieldset .cwrap label { display: block; text-align: left; }
+
+/* DataTable and Pager */
+#datatable { width: 960px; }
+#datatable table { width: 100%; }
+#pager {
+    background: none;
+    background-color: #eee;
+    border: 1px solid #ddd;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    color: #353535;
+    display: block;
+    font-size: 14px;
+    margin: 0 0 0 0; padding: 4px;
+    text-align: right;
+}
+#pager ol li a {
+    display: inline;
+}
+#pager img {
+    vertical-align: text-bottom;
+}
+#pager p {
+    display: inline;
+    float: left;
+    font-weight: bold;
+    font-size: 12px;
+    margin: 0; padding: 0;
+}
+#pager ol {
+    margin: 0; padding: 0;
+}
+#pager ol li {
+    display: inline;
+    list-style: none;
+}
+#pager span,
+#pager ol li a {
+    background: #fff;
+    border: 1px solid #ddd;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    color: #3470a9;
+    padding: 5px;
+    margin: 3px 0 ;
+    text-decoration: none;
+}
+#pager ol li a:hover {
+    background-color: #3470a9;
+    color: #fff;
+}
+#pager ol li.first {
+    margin: 0 7px 0 0;
+}
+#pager ol li.last {
+    margin: 0 0 0 7px;
+}
+
