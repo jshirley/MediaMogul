@@ -52,6 +52,7 @@ qq{<?xml version="1.0" ?>
 }
 
 sub guide :Path('guide') :Args(0) { }
+sub about :Path('guide') :Args(0) { }
 
 sub setup : Chained('/') PathPart('') CaptureArgs(0) {
     my ( $self, $c ) = @_;
