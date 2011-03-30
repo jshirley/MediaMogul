@@ -7,7 +7,10 @@ use base 'Catalyst::View::TT';
 
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.tt',
-    INCLUDE_PATH       => MediaMogul->path_to('templates'),
+    INCLUDE_PATH       => [
+        MediaMogul->path_to('root/templates'),
+        MediaMogul->path_to('templates'),
+    ],
     render_die         => 1,
 );
 

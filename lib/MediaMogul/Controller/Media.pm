@@ -19,9 +19,11 @@ __PACKAGE__->config(
     allow_by_default => 1,
     object_key => 'asset',
     permissions => {
+        'root_GET'      => [ '@upload_existing', '@upload_new', '@admin' ],
         'root_POST'     => [ '@upload_new', '@admin' ],
         'object_POST'   => [ '@upload_existing', '@admin' ],
         'object_DELETE' => [ '@delete_media', '@admin' ],
+        'manage_form'   => [ '@upload_existing', '@admin' ],
     }
 );
 

@@ -1,6 +1,7 @@
 <form method="post" action="[% c.uri_for_action('/authentication/login') %]">
     <fieldset>
         <legend>[% c.loc('Login to MediaMogul') %]</legend>
+        [% IF source %]<input type="hidden" name="source" value="[% source | html %]">[% END %]
         [% text_field({ label => c.loc('Username'), name => 'username', required => 1 }) %]
         [% password_field({ label => c.loc('Password'), name => 'password', required => 1 }) %]
         [% submit_button({ label => c.loc('Login') }) %]
