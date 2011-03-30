@@ -25,7 +25,7 @@ YUI().use("event-delegate", "datasource", "datasource-io", "datatable-datasource
     if ( typeof cols === 'undefined' ) {
         cols = [
             { key: "name", field: "name", label: "Name", sortable: true, formatter: linkColumn },
-            { key: "type", field: "media_type", label: "Type", sortable: true },
+            { key: "type", field: "content_type", label: "Type", sortable: true },
             { key: "actions", field: "actions", label: "Actions", sortable: false,
                 formatter: formatActions
             }

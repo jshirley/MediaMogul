@@ -32,14 +32,29 @@ has [ 'caption', 'source' ] => (
 
 has 'file_uuid' => (
     is          => 'rw',
-    isa         => 'MongoDB::OID',
-    predicate   => 'has_file'
+    isa         => 'ArrayRef[MongoDB::OID]',
+    predicate   => 'has_file',
+    traits      => [ 'Array' ],
+    default     => sub { [] },
+    handles => {
+        'add_file_uuid'   => 'push',
+        'get_file_uuid'   => 'get',
+        'file_uuid_count' => 'count',
+        'all_file_uuids'  => 'elements',
+    }
 );
+
+sub last_file_uuid {
+    my ( $self ) = @_;
+    $self->get_file_uuid( $self->file_uuid_count - 1 );
+}
 
 after 'delete' =>sub {
     my $self = shift;
     my $mfs = $self->_get_mongo_database->get_gridfs;
-    $mfs->delete( $self->file_uuid );
+    foreach my $uuid ( $self->all_file_uuids ) {
+        $mfs->delete( $uuid );
+    }
 };
 
 has '_verifier' => (
@@ -68,7 +83,7 @@ sub _build__verifier {
             template => {
                 type => 'Str',
             },
-            media_type => {
+            content_type => {
                 type => 'Str',
             },
             create => {
@@ -117,6 +132,12 @@ sub store_file {
     my ( $self, $file ) = @_;
     my $gfs = $self->_get_mongo_database->get_gridfs;
     my $id;
+
+    # TODO It would be useful to check this and not upload if it is a duplicate.
+    # We'd have to calculate the MD5 of the file on disk, which could be
+    # costly (then find something in the collection and just add the UUID to
+    # the top of the stack and return.
+
     if ( blessed $file and $file->isa('Catalyst::Request::Upload') ) {
         $id = $gfs->insert(
             $file->fh,
@@ -133,25 +154,37 @@ sub store_file {
     if ( not defined $id ) {
         die "Unable to save into GridFS";
     }
-    if ( $self->has_file ) {
-        $gfs->delete($self->file_uuid);
-    }
-    $self->file_uuid( $id );
+    $self->add_file_uuid( $id );
     $self->store;
 }
 
 sub get_file {
     my ( $self ) = @_;
     if ( $self->has_file ) {
-        return $self->_get_mongo_database->get_gridfs->get($self->file_uuid);
+        return $self->_get_mongo_database->get_gridfs->get($self->last_file_uuid);
     }
     return undef;
 }
 
-has 'media_type' => (
+has 'mime_type' => (
+    is          => 'ro',
+    isa         => 'MIME::Type',
+    traits      => [ 'DoNotSerialize' ],
+    lazy_build  => 1,
+    handles => {
+        'media_type' => 'mediaType',
+    }
+);
+
+sub _build_mime_type {
+    my ( $self ) = @_;
+    return MIME::Types->new->type( $self->content_type );
+}
+
+has 'content_type' => (
     is          => 'rw',
-    isa         => 'Str', # Really an enum
-    default     => 'image'
+    isa         => 'Str',
+    default     => 'text/plain'
 );
 
 has 'template' => (

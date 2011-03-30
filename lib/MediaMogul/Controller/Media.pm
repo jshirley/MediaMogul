@@ -67,7 +67,6 @@ sub root_POST {
             my $ext = $1;
             if ( $ext ) {
                 my $def = $mt->mimeTypeOf($ext);
-                $data->{media_type} = $def->mediaType;
                 $data->{content_type} = "$def";
                 $file->type("$def"); # The client is a lie!
             }
@@ -359,7 +358,7 @@ sub generate_embed : Private {
         $c->res->status(400);
         $c->res->body($c->loc('No view for type: [_1].', [ $type ]));
     }
-    $c->log->debug("Template is $template");
+    $c->log->debug("Template is $template") if $c->debug;
     $c->stash->{embed_output} = $c->view('Media')->render($c, $template);
 }
 

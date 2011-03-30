@@ -33,6 +33,19 @@ MooseX::Storage::Engine->add_custom_type_handler(
     )
 );
 
+MooseX::Storage::Engine->add_custom_type_handler(
+    'ArrayRef[MongoDB::OID]' => (
+        expand   => sub {
+            my $list = shift;
+            [ map { MongoDB::OID->new( value => $_ ); } @$list ]
+        },
+        collapse => sub {
+            my $list = shift;
+            [ map { $_->to_string } @$list ]
+        }
+    )
+);
+
 no warnings 'once';
 use utf8 ();
 
