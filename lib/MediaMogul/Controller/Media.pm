@@ -77,14 +77,12 @@ sub root_POST {
 
     unless ( $results->success ) {
         unless ( $c->req->looks_like_browser ) {
-            $c->log->_dump($results);
             return $self->status_bad_request($c, message => $c->loc('Invalid request'));
         }
         $c->res->redirect($c->uri_for_action('/media/create_form'));
         $c->detach;
     }
     my $values = $dm->data_for_scope('asset');
-    $c->log->_dump($values);
     my $media = $c->model('Asset')->find_one({ name => $values->{name} }) ||
                 $c->model('Asset')->new($values);
     unless ( $media ) {

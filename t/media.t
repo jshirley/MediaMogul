@@ -122,11 +122,11 @@ isa_ok($image, 'Imager', 'got imager from content');
 cmp_ok($image->getwidth, '==', 70, 'right width');
 cmp_ok($image->getheight, '==', 70, 'right height');
 
-$mech->get_ok('/media/transform-png/image/transform?scale=ypixels:300,xpixels:300&rotate=degrees:50', 'rotate and scale transform ok');
+$mech->get_ok('/media/transform-png/image/transform?scale=ypixels:30,xpixels:30&rotate=degrees:50', 'rotate and scale transform ok');
 my $image = Imager->new( data => $mech->content );
 isa_ok($image, 'Imager', 'got imager from content');
-cmp_ok($image->getwidth, '==', 300, 'right width');
-cmp_ok($image->getheight, '==', 300, 'right height');
+cmp_ok($image->getwidth, '==', 30, 'right width');
+cmp_ok($image->getheight, '==', 30, 'right height');
 
 my $uri = URI->new('/media/transform-png', 'http');
    $uri = $mech->base ? URI->new_abs( $uri, $mech->base ) : URI->new( $uri );
