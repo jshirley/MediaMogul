@@ -219,6 +219,34 @@ $resp = $mech->get("/media/some-text");
 ok(!$resp->is_success, "text upload doesn't exist");
 is($resp->status_line, '404 Not Found', 'not found');
 
+my $remote_uri = 'http://www.coldhardcode.com/static/images/logo.png';
+$mech->post_ok(
+    "/media",
+    {
+        'asset.name' => 'remote-asset',
+        'asset.source_uri' => $remote_uri,
+    },
+    'source URI posts ok'
+);
+
+$mech->get_ok("/media/remote-asset/embed", 'got embedded media');
+
+$mech->content_contains(
+    q{<img src="http://media.shirley.im/media/remote-asset/display"},
+    'proper embedding of remote asset'
+);
+
+my $uri = URI->new('/media/remote-asset', 'http');
+   $uri = $mech->base ? URI->new_abs( $uri, $mech->base ) : URI->new( $uri );
+
+$resp = $mech->request( HTTP::Request->new( DELETE => $uri ) );
+ok($resp->is_success, 'delete key ok');
+
+$resp = $mech->get("/media/remote-asset");
+ok(!$resp->is_success, "text upload doesn't exist");
+is($resp->status_line, '404 Not Found', 'not found');
+
+
 $user->delete;
 
 done_testing;

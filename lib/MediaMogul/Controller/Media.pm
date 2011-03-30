@@ -48,6 +48,13 @@ sub root_POST {
     $data->{create} = 1;
 
     my $file = $c->req->uploads->{file} || $c->req->uploads->{Filedata};
+
+    # If we have a source_uri, we actually setup a fake
+    # Catalyst::Request::Upload and use that
+    if ( $data->{source_uri} ) {
+        $file = $c->model('Downloader')->get( delete $data->{source_uri} );
+    }
+
     if ( $file ) {
         $data->{filename}     = $file->filename;
         $data->{file}         = $file->tempname;

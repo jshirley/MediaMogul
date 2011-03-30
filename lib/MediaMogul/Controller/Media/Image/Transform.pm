@@ -51,6 +51,16 @@ sub scale : Private {
     $c->stash->{image} = $image->scale( %$opts );
 }
 
+sub crop : Private {
+    my ( $self, $c, $opts ) = @_;
+    my $image = $c->stash->{image};
+    if ( my $w = $opts->{width} and my $h = $opts->{height} and my $p = $opts->{position} ) {
+        # position can be tl, tr, bl, br or center.
+        if ( $p eq 'center' ) {
+        }
+    }
+}
+
 sub flip : Private { }
 
 no Moose;
