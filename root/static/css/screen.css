@@ -337,3 +337,44 @@ fieldset .cwrap label { display: block; text-align: left; }
     margin: 0 0 0 7px;
 }
 
+#files tr.uploaded .upload-action { display: none; }
+
+#uploaderContainer div {
+    float: left;
+}
+
+table {
+	margin: 0; padding: 0;
+}
+table tbody tr.odd td,
+table tbody tr.odd th {
+	background-color: #f4f4f4;
+}
+
+table.things {
+    border-collapse: separate;
+    margin: 0 0 1em 0;
+}
+table.things thead th {
+    font-weight: bold;
+    padding: 0 1em;
+}
+table.things tbody td,
+table.things tbody th {
+    padding: 5px;
+    border: 1px solid #b4b4b4;
+    border-width: 1px 1px 0 0;
+}
+table.things tbody th {
+    border-left: 1px solid #b4b4b4;
+}
+table.things tbody tr.last td,
+table.things tbody tr.last th {
+    border-bottom: 1px solid #b4b4b4;
+}
+table.things tfoot td {
+    border-top: 1px solid #b4b4b4;
+    padding: 5px;
+    text-align: right;
+}
+

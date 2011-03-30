@@ -91,7 +91,6 @@ sub root_POST {
         $c->detach;
     }
     my $values = $dm->data_for_scope('asset');
-    $c->log->_dump($values);
     my $media = $c->model('Asset')->find_one({ name => $values->{name} }) ||
                 $c->model('Asset')->new($values);
     unless ( $media ) {
@@ -325,7 +324,7 @@ sub display : Chained('object_setup') Args(0) {
     $c->res->content_type( $data->info->{content_type} );
     my $name = $media->name;
         $name =~ s/"/&quot;/g;
-    $c->response->headers->header('Content-disposition:' =>
+    $c->response->headers->header('Content-disposition' =>
         qq{attachment; filename="$name"} );
     $c->res->body( $data->slurp );
 }

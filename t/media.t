@@ -220,6 +220,7 @@ ok(!$resp->is_success, "text upload doesn't exist");
 is($resp->status_line, '404 Not Found', 'not found');
 
 my $remote_uri = 'http://www.coldhardcode.com/static/images/logo.png';
+
 $mech->post_ok(
     "/media",
     {
@@ -235,6 +236,8 @@ $mech->content_contains(
     q{<img src="http://media.shirley.im/media/remote-asset/display"},
     'proper embedding of remote asset'
 );
+$mech->get_ok("/media/remote-asset/display", 'got display');
+cmp_ok($mech->response->content_length, '==', 26393, 'right content length from upload');
 
 my $uri = URI->new('/media/remote-asset', 'http');
    $uri = $mech->base ? URI->new_abs( $uri, $mech->base ) : URI->new( $uri );

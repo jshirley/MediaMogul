@@ -27,50 +27,47 @@ has 'ua' => (
 sub get {
     my ( $self, $url ) = @_;
 
-    $url = URI->new($url);
+    local $| = 1;
+
+    $url = URI->new($url, 'http');
     
-    my $upload = undef;
-    my $res = $self->ua->request(
-        HTTP::Request->new( GET => $url ),
-        sub {
-            my $res = $_[1];
+    my $res = $self->ua->get( $url );
+    die $res unless $res->is_success;
 
-            my $filename = $res->filename;
+    my ( $fh, $tempname ) = tempfile();
 
-            if ( not $filename ) {
-                $filename = ($url->path_segments)[-1];
-                if ( not defined $filename or not length $filename ) {
-                    $filename = "index";
-                    my $suffix = media_suffix($res->content_type);
-                    $filename .= ".$suffix" if $suffix;
-                }
-                # Helpfully borrowed from lwp-download
-                if ( not length($filename) ||
-                     $filename =~ s/([^a-zA-Z0-9_\.\-\+\~])/sprintf "\\x%02x", ord($1)/ge ||
-                     $filename =~ /^\./
-                ) {
-                    die "Will not save <$url> as \"$filename\".\n";
-                }
-            }
+    my $filename = $res->filename;
 
-            my ( $fh, $tempname ) = tempfile();
-            binmode $fh;
-            my $length  = $res->content_length;
-            print $fh $_[0];
-
-            $fh->seek( 0, SEEK_END );
-            $upload = Catalyst::Request::Upload->new(
-                fh       => $fh,
-                tempname => $tempname,
-                headers  => $res->headers,
-                size     => $length,
-                type     => $res->content_type,
-                filename => $filename,
-            );
+    if ( not $filename ) {
+        $filename = ($url->path_segments)[-1];
+        if ( not defined $filename or not length $filename ) {
+            $filename = "index";
+            my $suffix = media_suffix($res->content_type);
+            $filename .= ".$suffix" if $suffix;
         }
-    );
+        # Helpfully borrowed from lwp-download
+        if ( not length($filename) ||
+            $filename =~ s/([^a-zA-Z0-9_\.\-\+\~])/sprintf "\\x%02x", ord($1)/ge ||
+            $filename =~ /^\./
+        ) {
+            die "Will not save <$url> as \"$filename\".\n";
+        }
+    }
+    warn "Final filename: $filename\n";
+    binmode $fh;
+    my $length  = $res->content_length;
 
-    return $upload;
+    print $fh $res->content;
+
+    $fh->close;
+
+    return Catalyst::Request::Upload->new(
+        tempname => $tempname,
+        headers  => $res->headers,
+        size     => $length,
+        type     => $res->content_type,
+        filename => $filename,
+    );
 }
 
 no Moose;
