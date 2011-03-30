@@ -343,12 +343,19 @@ sub generate_embed : Private {
     my $type = $asset->media_type;
 
     my $template;
-    if ( -f $c->path_to('templates', $type, "$tmpl.tt") ) {
-        $template = join('/', $type, "$tmpl.tt");
+    my $view = $c->view('Media');
+    my @paths = ref $view->{INCLUDE_PATH} ?
+        @{ $view->{INCLUDE_PATH} } : ( $view->{INCLUDE_PATH} );
+    foreach my $path ( @paths ) {
+        if ( -f $path->subdir($type)->file("$tmpl.tt") ) {
+            $template = join('/', $type, "$tmpl.tt");
+        }
+        elsif ( -f $path->subdir($type)->file("default.tt") ) {
+            $template = join('/', $type, "default.tt");
+        }
     }
-    elsif ( -f $c->path_to('templates', $type, "default.tt") ) {
-        $template = join('/', $type, "default.tt");
-    } else {
+
+    if ( not $template ) {
         $c->res->status(400);
         $c->res->body($c->loc('No view for type: [_1].', [ $type ]));
     }
