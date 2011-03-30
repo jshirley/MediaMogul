@@ -16,7 +16,7 @@ requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Plugin::Params::Nested';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Action::REST';
-
+requires 'Catalyst::Component::InstancePerContext';
 requires 'Catalyst::Plugin::Authentication';
 requires 'Catalyst::Plugin::I18N';
 requires 'Catalyst::Plugin::Session';
@@ -46,10 +46,16 @@ requires 'LWP::UserAgent';
 requires 'MongoDB';
 
 requires 'Moose';
+requires 'MooseX::Clone';
+requires 'MooseX::Singleton';
 requires 'MooseX::Storage';
 requires 'MooseX::Traits';
 
+requires 'Template::Plugin::Time::Duration';
+requires 'Time::Duration';
+
 requires 'YAML';
+requires 'YAML::XS';
 
 test_requires 'Test::More' => '0.88';
 #catalyst;
