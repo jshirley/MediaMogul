@@ -97,8 +97,13 @@ Standard 404 error page
 
 sub default :Path {
     my ( $self, $c ) = @_;
-    $c->response->body( 'Page not found' );
+    $c->detach('not_found');
+}
+
+sub not_found : Private {
+    my ( $self, $c ) = @_;
     $c->response->status(404);
+    $c->stash->{template} = 'errors/404.tt';
 }
 
 =head2 end

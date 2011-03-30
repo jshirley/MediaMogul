@@ -172,13 +172,15 @@ sub access_denied : Private {
 sub not_found : Private { 
     my ( $self, $c ) = @_;
     $c->res->status(404);
+    $c->log->debug("Eh? " . $c->req->looks_like_browser );
     unless ( $c->req->looks_like_browser ) {
         return $self->status_not_found($c, message => $c->loc("Not found"));
     }
 
-    if ( $c->action->namespace =~ /^media/ ) {
+    if ( $c->action->namespace =~ /^media/ and $c->action ne 'media/manage_form' ) {
         # Don't render a template for the media controller
-        $c->res->body( $c->loc("Not found") );
+        $c->res->content_type('text/plain');
+        return $c->res->body('Not found');
     } else {
         $c->stash->{template} = $c->action->namespace . "/not_found.tt";
     }
