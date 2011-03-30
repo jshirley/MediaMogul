@@ -5,9 +5,7 @@ use Moose;
 BEGIN { extends 'MediaMogul::Base::Controller::REST::Mongo'; }
 
 use Scalar::Util 'blessed';
-use Hash::Diff qw(left_diff);
-
-use URI::Escape;
+use URI::Escape 'uri_escape';
 
 __PACKAGE__->config(
     actions       => { 'setup' => { PathPart => 'media' } },
@@ -55,7 +53,9 @@ sub root_POST {
         $data->{file}         = $file->tempname;
         $data->{content_type} = $file->type;
 
-        if ( my $new_key = $c->req->params->{'file.' . $data->{filename}} ) {
+        my $uri_filename = uri_escape($data->{filename});
+        if ( my $new_key = $c->req->params->{"file.$uri_filename"} ) {
+            $c->log->debug(" -> $new_key");
             $data->{name} = $new_key;
         }
         my $mt   = MIME::Types->new;
@@ -84,6 +84,7 @@ sub root_POST {
         $c->detach;
     }
     my $values = $dm->data_for_scope('asset');
+    $c->log->_dump($values);
     my $media = $c->model('Asset')->find_one({ name => $values->{name} }) ||
                 $c->model('Asset')->new($values);
     unless ( $media ) {
