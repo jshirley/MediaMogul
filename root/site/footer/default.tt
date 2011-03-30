@@ -6,6 +6,9 @@
         <ul>
             <li><a href="[% c.uri_for_action('/about') %]">About</a></li>
             <li><a href="http://github.com/jshirley/mediamogul">On GitHub</a></li>
+[% IF 0 %]
+            <li><a href="http://github.com/jshirley/jekyll-mediamogul-plugin">Jekyll Plugin</a></li>
+[% END %]
             [% IF c.debug %]
             <li><a href="[% c.uri_for_action('/guide') %]">Style Guide</a></li>
             [% END %]

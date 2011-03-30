@@ -1,5 +1,5 @@
 <div class="header">
-    <h1><a href="[% c.uri_for('/') %]">[% c.loc('Home') %]</a></h1>
+    <h1><a href="[% c.uri_for('/') %]">[% c.loc('MediaMogul') %]</a></h1>
 [% # Include the navigation
 IF page.nav && page.nav != 'none';
     PROCESS "site/nav/${page.nav}.tt";

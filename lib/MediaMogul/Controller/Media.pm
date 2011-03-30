@@ -30,7 +30,7 @@ has 'profiles_by_type' => (
     isa => 'HashRef[HashRef[ArrayRef]]',
     default => sub { {
         'image' => {
-            'thumbnail' => [ '/media/image/transform/root', { scale => 'ypixels:300,xpixels:300,type:min' } ],
+            'thumbnail' => [ '/media/image/transform/root', { scale => 'ypixels:250,xpixels:250,type:min' } ],
             'blog' => [ '/media/image/transform/root', { scale => 'ypixels:500,xpixels:500,type:min' } ],
         }
     } },
@@ -339,7 +339,7 @@ sub generate_embed : Private {
     }
     $c->stash->{media_uri} = $media_uri;
 
-    my $tmpl = $asset->template || 'default';
+    my $tmpl = $asset->template || $profile || 'default';
     my $type = $asset->media_type;
 
     my $template;
