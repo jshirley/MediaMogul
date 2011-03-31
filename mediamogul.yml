@@ -1,6 +1,7 @@
 ---
 name: MediaMogul
 
-# Put in your CDN (Varnish, etc) host here
+# Put in your CDN (Varnish, etc) host under the public_host key
+# in the file "mediamogul_local.yml"
 #public_host: media.shirley.im
 

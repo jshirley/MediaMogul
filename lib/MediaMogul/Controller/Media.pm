@@ -325,7 +325,7 @@ sub display : Chained('object_setup') Args(0) {
     my $name = $media->name;
         $name =~ s/"/&quot;/g;
     $c->response->headers->header('Content-disposition' =>
-        qq{attachment; filename="$name"} );
+        qq{inline; filename="$name"} );
     $c->res->body( $data->slurp );
 }
 
