@@ -1,7 +1,6 @@
 ---
 name: MediaMogul
 
-public_host: media.shirley.im
-
-View::Media:
+# Put in your CDN (Varnish, etc) host here
+#public_host: media.shirley.im
 
