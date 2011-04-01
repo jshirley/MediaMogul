@@ -1,0 +1,6 @@
+---
+- name: "mediamogul.server"
+  scriptname: "/home/mediamogul/MediaMogul/script/jarvis_fastcgi.pl"
+  pidfile:    "/home/mediamogul/mediamogul.pid"
+  socket:     "/home/mediamogul/mediamogul.socket"
+  nproc:      2

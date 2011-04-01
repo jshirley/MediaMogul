@@ -49,9 +49,40 @@ Use Debian Squeeze.
 
     sudo apt-get install mongodb git-core build-essential curl
 
+Also, make sure to install the *development* version of the various image files you intend to use (protip: just install them all).
+
+Here is what I use:
+
+    sudo apt-get install libjpeg8-dev libpng12-dev libgif-dev
+
 Create a user (or your own user account) to run MediaMogul. Once you are logged in as that user, use perlbrew and cpanm (cpanminus) to install all the perl dependencies. I have a bootstrap script that works (but is only tested on Squeeze).
 
-I recommend using Server::Starter and Plack (Starman). If you are going to use those, under the same account you are going to run MediaMogul as, run:
+See it under contrib/debian-bootstrap.sh.  This will setup Perl for that user and install all necessary setup modules for that user. It then checks MediaMogul out from github and install all the direct dependencies.
+
+To get everything going, try this:
+
+    curl https://github.com/jshirley/MediaMogul/raw/master/contrib/debian-bootstrap.sh | bash
+
+When it fails, submit a bug report and I'll help you out!
+
+Running Under FastCGI
+---------------------
+
+I recommend using FastCGI and the FCGI::Engine manager. This will start a daemon. To start with, install FCGI::Engine:
+
+    cpanm FCGI::Engine
+
+Then edit the configuration in script/fastcgi.yml to point to the right directory you are running MediaMogul out of and where you want the PID and the socket.
+
+Then you just run:
+
+    MediaMogul/script/manager.pl start
+
+You should be good.  Just configure your frontend server to talk to it. Again, I recommend having Varnish at some point between MediaMogul and the ultimate end-users so the transformations are cached.
+
+Running Under Plack
+-------------------
+The other recommended option is using Server::Starter and Plack (Starman). If you are going to use those, under the same account you are going to run MediaMogul as, run:
 
     cpanm Starman Server::Starter Catalyst::Engine::PSGI Net::Server::SS::PreFork
 
@@ -60,4 +91,4 @@ This will get you a preforking server that you can throw Varnish in front of. Th
     cd MediaMogul
     start_server --port 127.0.0.1:8080 -- starman --workers 8 script/mediamogul.psgi
 
-Now the app is running on port 8080. Go nuts!
+Now the app is running on port 8080. Go nuts!  This is a nice solution because you have a reliable server running directly. If you use FastCGI, you still have to have something that is the gateway into FastCGI.
