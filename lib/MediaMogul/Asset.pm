@@ -25,7 +25,7 @@ has 'name' => (
     required    => 1
 );
 
-has [ 'caption', 'source' ] => (
+has [ 'caption', 'source', 'source_url', 'note' ] => (
     is          => 'rw',
     isa         => 'Str',
 );
@@ -78,6 +78,12 @@ sub _build__verifier {
                 type => 'Str',
             },
             source => {
+                type => 'Str',
+            },
+            source_url => {
+                type => 'Str',
+            },
+            note => {
                 type => 'Str',
             },
             template => {

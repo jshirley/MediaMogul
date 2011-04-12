@@ -18,7 +18,10 @@ page.body.scripts.push('asset_manage.js');
         <legend>[% c.loc('Edit Information') %]</legend>
         [% context.scope = 'asset' %]
         [% readonly_field({ label => 'Name', name => 'asset.name', value => asset.name }) %]
-        [% text_field({ label => 'Default Caption', name => 'asset.caption' }) %]
+        [% textarea_field({ label => 'Default Caption', name => 'asset.caption' }) %]
+        [% text_field({ label => 'Source', name => 'asset.source' }) %]
+        [% text_field({ label => 'Source URL', name => 'asset.source_url' }) %]
+        [% textarea_field({ label => 'Private Note', name => 'asset.note' }) %]
         [% select_field({ label => 'Default Profile', name => 'asset.template', array => profiles, default_option => [ '', c.loc('Default [_1] view', [ asset.media_type ]) ] }) %]
         [% submit_button({ label => 'Save' }) %]
     </fieldset>

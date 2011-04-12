@@ -15,11 +15,12 @@ div.header {
 div.header h1 {
     padding: 24px 0 0 1ex;
     text-shadow: #000 1px 1px;
-    color: #fff
+    color: #fff;
 }
 div.header a {
-    color: #ccc;
+    color: #fff;
 }
+div.header h1 a { color: inherit; }
 body .header .nav {
     border-width: 0;
     display: inline;
