@@ -23,6 +23,7 @@ __PACKAGE__->config(
         'root_POST'     => [ '@upload_new', '@admin' ],
         'object_POST'   => [ '@upload_existing', '@admin' ],
         'object_DELETE' => [ '@delete_media', '@admin' ],
+        'delete_proxy'  => [ '@delete_media', '@admin' ],
         'manage_form'   => [ '@upload_existing', '@admin' ],
     }
 );
@@ -294,8 +295,18 @@ sub object_POST {
     $c->detach;
 }
 
+sub delete_proxy : Chained('object_setup') PathPart('delete') Args(0) {
+    my ( $self, $c ) = @_;
+    if ( $c->req->method eq 'POST' ) {
+        $self->object_DELETE($c);
+    }
+    $c->res->redirect($c->uri_for_action('/media/root'));
+    $c->detach;
+}
+
 sub object_DELETE {
     my ( $self, $c ) = @_;
+    $c->log->debug("I'm deleting!");
     $c->stash->{ $self->object_key }->delete;
     unless ( $c->req->looks_like_browser ) {
         return $self->status_accepted(

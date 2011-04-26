@@ -26,3 +26,8 @@ page.body.scripts.push('asset_manage.js');
         [% submit_button({ label => 'Save' }) %]
     </fieldset>
 </form>
+
+<form method="post" action="[% c.uri_for_action('/media/delete_proxy', [ asset.name ]) %]">
+    <p>[% c.loc("Had enough of [_1]? Well, then delete it. Make sure nothing is using it, because then all your users will get 404s and be unhappy.", [ asset.name ]) %]</p>
+    <button class="scary action">[% c.loc('Delete!') %]</button>
+</form>
