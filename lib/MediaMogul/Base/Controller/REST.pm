@@ -89,7 +89,14 @@ sub setup : Chained('.') PathPart('') CaptureArgs(0) {
         $c->stash->{context}->{scope} = $self->scope
     }
 
-    my $action = $c->action->name;
+    my $namespace = $self->action_namespace($c);
+    my $chain     = $c->dispatcher->expand_action($c->action);
+
+    my @actions   = grep { $_->namespace eq $namespace } @{ $chain->chain };
+    # XX This should crawl the entire action chain and iterate to find
+    # permissions. But it doesn't, so supply a patch!
+    my $action = $actions[-1] ? $actions[-1]->name : $c->action->name;
+
     my $perm = $self->get_permission_for_action( $action );
     if ( $c->req->method ne 'GET' and not defined $perm ) {
         # Not a GET request, so look up the $action_PUT style actions that
@@ -112,7 +119,7 @@ sub setup : Chained('.') PathPart('') CaptureArgs(0) {
         $c->log->info(
             "Access denied for user: " . 
             ( $c->user_exists ? $c->user->name : 'anonymous' ) .
-            ", require permissions @$perm, only has: " .
+            ", require permissions @$perm for action $action, only has: " .
             join(', ', keys %{ $c->stash->{context}->{permissions} } )
         );
         $c->detach('permission_denied');
