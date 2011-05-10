@@ -35,6 +35,7 @@ has 'profiles_by_type' => (
         'image' => {
             'thumbnail' => [ '/media/image/transform/root', { scale => 'ypixels:250,xpixels:250,type:min' } ],
             'blog' => [ '/media/image/transform/root', { scale => 'ypixels:500,xpixels:500,type:min' } ],
+            'blog-right' => [ '/media/image/transform/root', { scale => 'ypixels:250,xpixels:250,type:min' } ],
         }
     } },
     traits => [ 'Hash' ],

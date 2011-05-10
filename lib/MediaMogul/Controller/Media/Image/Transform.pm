@@ -1,6 +1,7 @@
 package MediaMogul::Controller::Media::Image::Transform;
 
 use Moose;
+use DateTime;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -29,6 +30,11 @@ sub root : Chained('setup') PathPart('') Args(0) {
         data => \$data,
         type => $type->subType
     ) or $c->log->error($image->errstr);
+
+    my $then = DateTime->now->add( hours => 1 );
+    $c->response->headers->header( 'Expires', DateTime::Format::HTTP->format_datetime($then) );
+    $c->response->headers->header( 'Cache-Control', 'max-age=3600' );
+
     $c->res->body( $data );
 }
 
