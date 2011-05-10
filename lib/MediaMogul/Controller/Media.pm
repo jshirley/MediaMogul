@@ -350,6 +350,7 @@ sub generate_embed : Private {
     my $media_uri = $c->uri_for_action('/media/display', [ $asset->name ]);
     if ( $profile ) {
         my $profiles = $self->get_profiles_for_type($asset->media_type);
+        $c->log->_dump($profiles);
         if ( $profiles and my $defaults = $profiles->{$profile} ) {
             $media_uri = $c->uri_for_action($defaults->[0], [ $asset->name ], $defaults->[1]);
         }

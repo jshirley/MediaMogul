@@ -2,6 +2,7 @@ package MediaMogul::Controller::Media::Image::Transform;
 
 use Moose;
 use DateTime;
+use DateTime::Format::HTTP;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
