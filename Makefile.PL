@@ -34,6 +34,7 @@ requires 'Config::JFDI';
 requires 'Data::Manager';
 requires 'Data::SearchEngine';
 requires 'DateTime';
+requires 'DateTime::Format::HTTP';
 requires 'DateTimeX::Easy';
 
 requires 'Imager';

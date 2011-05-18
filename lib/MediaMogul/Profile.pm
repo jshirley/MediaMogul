@@ -69,6 +69,14 @@ sub _build__verifier {
             },
             arguments => {
                 type => 'HashRef[Str]',
+                coercion => Data::Verifier::coercion(
+                    from => 'ArrayRef',
+                    via  => sub {
+                        my $list = $_;
+                        my %ret = map { $_->{key} => $_->{value} } @$list;
+                        return \%ret;
+                    }
+                )
             },
         }
     );
@@ -79,6 +87,23 @@ sub as_results {
     my ( $self ) = @_;
     my ( $verifier ) = values %{ $self->_verifier };
     return $verifier->verify( $self->pack );
+}
+
+=head1 CLASS METHODS
+
+=head2 get_profiles_for_type
+
+Fetch all matching profiles for the media type.  Returns a hash with the key
+being the name of the profile.
+
+=cut
+
+sub get_profiles_for_type {
+    my ( $class, $type ) = @_;
+    return {
+       map { $_->name => $_ }
+       $class->find({ media_type => $type })
+   };
 }
 
 

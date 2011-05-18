@@ -40,7 +40,7 @@ has 'profiles_by_type' => (
     } },
     traits => [ 'Hash' ],
     handles => {
-        'get_profiles_for_type' => 'get'
+        '_get_profiles_for_type' => 'get'
     }
 );
 
@@ -348,11 +348,20 @@ sub generate_embed : Private {
 
     # Render the URL for the public facing
     my $media_uri = $c->uri_for_action('/media/display', [ $asset->name ]);
+    my $type      = $asset->media_type;
+
     if ( $profile ) {
-        my $profiles = $self->get_profiles_for_type($asset->media_type);
-        $c->log->_dump($profiles);
-        if ( $profiles and my $defaults = $profiles->{$profile} ) {
-            $media_uri = $c->uri_for_action($defaults->[0], [ $asset->name ], $defaults->[1]);
+        my $profiles = $c->model('Profile')->get_profiles_for_type($type);
+        if ( $profiles and my $default = $profiles->{$profile} ) {
+
+            my $action = $c->get_action(
+                $default->action || 'root',
+                "/media/$type/transform"
+            );
+$c->log->info("Action: $action (type: $type, ". $default->action . ")");            
+            $media_uri = $c->uri_for_action($action,
+                [ $asset->name ], $default->arguments);
+            $c->log->info("Media URI: $media_uri");
         }
     }
     unless ( $c->debug and $c->config->{public_host} ) {
@@ -361,7 +370,6 @@ sub generate_embed : Private {
     $c->stash->{media_uri} = $media_uri;
 
     my $tmpl = $asset->template || $profile || 'default';
-    my $type = $asset->media_type;
 
     my $template;
     my $view = $c->view('Media');

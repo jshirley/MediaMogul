@@ -7,6 +7,7 @@ html, body {
     margin: 0; padding: 0;
     height: 100%; min-height: 100%;
 }
+.hidden { display: none; }
 div.wrapper { min-height: 100%; position: relative; }
 div.header {
     background: #e5e5d4 url('images/header_back.png') repeat-x;

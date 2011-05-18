@@ -14,6 +14,7 @@ sub build_per_context_instance {
     my $dm = MediaMogul::DataManager->new_from_classes(
         'MediaMogul::Asset',
         'MediaMogul::User',
+        'MediaMogul::Profile',
     );
 
     $dm;

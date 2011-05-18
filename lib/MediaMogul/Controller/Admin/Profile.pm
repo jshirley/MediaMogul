@@ -30,10 +30,11 @@ sub root_POST {
 
     my $dm      = $c->model('DataManager');
     my $results = $dm->verify('profile', $data);
-
+$c->log->debug("Success? " . $results->success);
     unless ( $results->success ) {
         unless ( $c->req->looks_like_browser ) {
-            return $self->status_bad_request($c, message => $c->loc('Invalid request'));
+            $c->log->_dump($results);
+            return $self->status_bad_request($c, message => $c->loc('Invalid request, check data'));
         }
         $c->res->redirect($c->uri_for_action('/admin/profile/create_form'));
         $c->detach;
@@ -56,6 +57,7 @@ sub root_POST {
         }
     }
     my $id = $profile->store;
+    $c->log->debug("Storing profile: $id");
 
     my $object_uri = $c->uri_for_action('/admin/profile/manage_form', [ $profile->name ]);
 
@@ -96,7 +98,7 @@ sub object_GET {
     unless ( $c->req->looks_like_browser ) {
         return $self->status_ok(
             $c,
-            entity => { asset => $c->stash->{ $self->object_key }->pack }
+            entity => { profile => $c->stash->{ $self->object_key }->pack }
         );
     }
 }
@@ -119,7 +121,7 @@ sub object_POST {
         $c->detach;
     }
 
-    my $values  = $dm->data_for_scope('asset');
+    my $values  = $dm->data_for_scope('profile');
     my $profile = $c->stash->{ $self->object_key };
 
     delete $values->{name};
