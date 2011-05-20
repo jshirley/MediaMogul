@@ -344,43 +344,52 @@ sub display : Chained('object_setup') Args(0) {
 }
 
 sub generate_embed : Private {
-    my ( $self, $c, $asset, $profile ) = @_;
+    my ( $self, $c, $asset, $profile_name ) = @_;
 
     # Render the URL for the public facing
     my $media_uri = $c->uri_for_action('/media/display', [ $asset->name ]);
     my $type      = $asset->media_type;
-
-    if ( $profile ) {
-        my $profiles = $c->model('Profile')->get_profiles_for_type($type);
-        if ( $profiles and my $default = $profiles->{$profile} ) {
-
+    my $profile;
+    my $template;
+    if ( $profile_name ) {
+        $profile = $c->model('Profile')->find_one({ name => $profile_name });
+        if ( $profile ) {
             my $action = $c->get_action(
-                $default->action || 'root',
+                $profile->action || 'root',
                 "/media/$type/transform"
             );
-$c->log->info("Action: $action (type: $type, ". $default->action . ")");            
             $media_uri = $c->uri_for_action($action,
-                [ $asset->name ], $default->arguments);
+                [ $asset->name ], $profile->arguments);
+            if ( $profile->template ) {
+                $template = $profile->template;
+                $c->log->debug("Template: $template");
+                $template = \"$template"; # Use a ref, for TT
+            }
             $c->log->info("Media URI: $media_uri");
         }
     }
     unless ( $c->debug and $c->config->{public_host} ) {
         $media_uri->host( $c->config->{public_host} );
     }
+
+    # Lets make this easy on people
     $c->stash->{media_uri} = $media_uri;
+    $c->stash->{media_url} = $media_uri;
+    $c->stash->{url}       = $media_uri;
 
-    my $tmpl = $asset->template || $profile || 'default';
-
-    my $template;
-    my $view = $c->view('Media');
-    my @paths = ref $view->{INCLUDE_PATH} ?
-        @{ $view->{INCLUDE_PATH} } : ( $view->{INCLUDE_PATH} );
-    foreach my $path ( @paths ) {
-        if ( -f $path->subdir($type)->file("$tmpl.tt") ) {
-            $template = join('/', $type, "$tmpl.tt");
-        }
-        elsif ( -f $path->subdir($type)->file("default.tt") ) {
-            $template = join('/', $type, "default.tt");
+    # Not a ref from the profile, find something on disk.
+    unless ( ref $template ) {
+        my $tmpl = $asset->template || $profile || 'default';
+        my $view = $c->view('Media');
+        my @paths = ref $view->{INCLUDE_PATH} ?
+            @{ $view->{INCLUDE_PATH} } : ( $view->{INCLUDE_PATH} );
+        foreach my $path ( @paths ) {
+            if ( -f $path->subdir($type)->file("$tmpl.tt") ) {
+                $template = join('/', $type, "$tmpl.tt");
+            }
+            elsif ( -f $path->subdir($type)->file("default.tt") ) {
+                $template = join('/', $type, "default.tt");
+            }
         }
     }
 
@@ -388,7 +397,6 @@ $c->log->info("Action: $action (type: $type, ". $default->action . ")");
         $c->res->status(400);
         $c->res->body($c->loc('No view for type: [_1].', [ $type ]));
     }
-    $c->log->debug("Template is $template") if $c->debug;
     $c->stash->{embed_output} = $c->view('Media')->render($c, $template);
 }
 

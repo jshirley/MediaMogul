@@ -30,7 +30,7 @@ sub root_POST {
 
     my $dm      = $c->model('DataManager');
     my $results = $dm->verify('profile', $data);
-$c->log->debug("Success? " . $results->success);
+
     unless ( $results->success ) {
         unless ( $c->req->looks_like_browser ) {
             $c->log->_dump($results);
@@ -77,9 +77,19 @@ $c->log->debug("Success? " . $results->success);
 sub root_GET {
     my ( $self, $c ) = @_;
 
-    return if $c->req->looks_like_browser;
+    my @results = $c->model('Profile')->find;
 
-    return $self->status_ok( $c, { entity => { results => [] } } );
+    unless ( $c->req->looks_like_browser ) { 
+        return $self->status_ok( $c, { entity => { results => [ map { $_->pack } @results] } } );
+    }
+
+    my %sorted = ();
+    foreach my $profile ( @results ) {
+        $sorted{$profile->media_type} ||= [];
+        push @{$sorted{$profile->media_type}}, $profile;
+
+    }
+    $c->stash->{profiles_by_type} = \%sorted;
 }
 
 sub create_form : Chained('setup') PathPart('create') Args(0) { }
@@ -93,7 +103,7 @@ sub object_setup : Chained('setup') PathPart('') CaptureArgs(1) {
     $c->stash->{ $self->object_key } = $profile;
 }
 
-sub object_GET { 
+sub object_GET {
     my ( $self, $c ) = @_;
     unless ( $c->req->looks_like_browser ) {
         return $self->status_ok(
@@ -106,23 +116,26 @@ sub object_GET {
 sub object_POST {
     my ( $self, $c ) = @_;
 
-    my $data = $c->req->params;
+    my $profile = $c->stash->{ $self->object_key };
+
+    my $data = $c->req->params->{profile} ? $c->req->params->{profile} : $c->req->params;
     $data->{update} = 1;
+    $data->{name}   = $profile->name;
 
     my $dm      = $c->model('DataManager');
     my $results = $dm->verify('profile', $data);
 
+    my $object_uri = $c->uri_for_action('/admin/profile/manage_form', [ $profile->name ]);
     unless ( $results->success ) {
         unless ( $c->req->looks_like_browser ) {
             return $self->status_bad_request(
                 $c, message => $c->loc('Invalid request'));
         }
-        $c->res->redirect($c->uri_for_action('/admin/profile/manage_form'));
+        $c->res->redirect($object_uri);
         $c->detach;
     }
 
     my $values  = $dm->data_for_scope('profile');
-    my $profile = $c->stash->{ $self->object_key };
 
     delete $values->{name};
     foreach my $value ( keys %$values ) {
@@ -134,8 +147,6 @@ sub object_POST {
     }
 
     $profile->store;
-
-    my $object_uri = $c->uri_for_action('/admin/profile/manage_form', [ $profile->name ]);
 
     unless ( $c->req->looks_like_browser ) {
         $c->res->body('ok.'); # Some clients won't serialize ok. The serializer
@@ -167,7 +178,10 @@ sub object_DELETE {
     $c->detach;
 }
 
-sub manage_form : Chained('object_setup') PathPart('manage') Args(0) { }
+sub manage_form : Chained('object_setup') PathPart('manage') Args(0) { 
+    my ( $self, $c ) = @_;
+    $c->log->_dump( $c->stash->{results} );
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable; 1;

@@ -22,19 +22,24 @@ has 'name' => (
 );
 
 has 'media_type' => (
-    is       => 'ro',
+    is       => 'rw',
     isa      => 'Str',
     required => 1,
 );
 
 has 'action' => (
-    is       => 'ro',
+    is       => 'rw',
     isa      => 'Str',
     required => 1,
 );
 
+has 'template' => (
+    is       => 'rw',
+    isa      => 'Str',
+);
+
 has 'arguments' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => 'HashRef',
     default => sub { { } }
 );
@@ -55,6 +60,14 @@ sub _build__verifier {
             name => {
                 type     => 'Str',
                 required => 1,
+                post_check => sub {
+                    my $r = shift;
+                    my $n = $r->get_value('name');
+                    if ( $n =~ /^[a-z0-0][a-z0-9\-\_]+$/ ) {
+                        return 1;
+                    }
+                    return 0;
+                }
             },
             media_type => {
                 type     => 'Str',

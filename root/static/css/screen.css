@@ -217,7 +217,7 @@ div.message {
 
 
 fieldset {
-    width: 600px;
+    width: 680px;
     line-height: 1.8em;
     margin: 2em 0;
 }
@@ -275,7 +275,7 @@ fieldset select,
 fieldset textarea {
     resize: none;
     margin: 0; padding: 2px;
-    width: 200px;
+    width: 80%;
 }
 
 fieldset .cwrap { margin: 0; padding: 0; }

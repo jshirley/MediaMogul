@@ -1,0 +1,38 @@
+[%~
+
+items = results.profile.get_value('arguments') || profile.arguments;
+
+~%]
+<form method="post" action="[% c.uri_for_action('/admin/profile/object', [ profile.name ] ) %]">
+    <fieldset>
+        <legend>[% c.loc('Edit Profile: [_1]', [ profile.name ]) %]</legend>
+        [% context.scope = 'profile' %]
+        [% select_field({ name => 'profile.media_type', label => 'Media Type', required => 1, array => [ 'Image' ], value => results.profile.get_value('media_type') || profile.media_type }) %]
+        [% text_field({ name => 'profile.action', label => 'Method', value => results.profile.get_value('action') || profile.action }) %]
+        [% textarea_field({ name => 'profile.template', label => 'Embed Template', value => results.profile.get_value('template') || profile.template }) %]
+        <div class="profile-argument">
+          <h4>Transformation Arguments</h4>
+          <div class="yui3-g argument-item repeatable">
+              <div class="yui3-u-1-12"><a class="action repeatable-add" href="#profile-argument">+</a></div>
+              <div class="yui3-u-2-5"><strong>Key</strong></div>
+              <div class="yui3-u-2-5"><strong>Value</strong></div>
+          </div>
+[% FOREACH key IN items.keys.sort %]
+          <div class="yui3-g argument-item repeatable">
+             <div class="yui3-u-1-12"></div>
+             <div class="yui3-u-2-5"><input type="text" name="profile.argument.0.key" value="[% key %]"></div>
+             <div class="yui3-u-2-5"><input type="text" name="profile.argument.0.value" value="[% items.$key %]"></div>
+         </div>
+[% END %]
+        </div>
+        [% submit_button({ label => 'Save' }) %]
+    </fieldset>
+</form>
+<div id="profile-argument-template" class="hidden">
+    <div class="yui3-g profile-argument repeatable">
+        <div class="yui3-u-1-12">&nbsp;</div>
+        <div class="yui3-u-2-5"><input type="text" name="profile.argument.{index}.key"></div>
+        <div class="yui3-u-2-5"><input type="text" name="profile.argument.{index}.value"></div>
+    </div>
+</div>
+

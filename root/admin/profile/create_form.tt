@@ -6,7 +6,8 @@
     <fieldset>
         <legend>[% c.loc('Create Profile') %]</legend>
         [% context.scope = 'profile' %]
-        [% select_field({ name => 'profile.type', label => 'Media Type', required => 1, array => [ 'Image' ] }) %]
+        [% text_field({ name => 'profile.name', label => 'Name', required => 1, more => c.loc('Letters, numbers, and _.')}) %]
+        [% select_field({ name => 'profile.media_type', label => 'Media Type', required => 1, array => [ 'Image' ] }) %]
         [% text_field({ name => 'profile.action', label => 'Method', value => results.profile.get_value('action') || 'root' }) %]
         [% textarea_field({ name => 'profile.template', label => 'Embed Template', value => results.profile.get_value('template') || default_template }) %]
         <div class="profile-argument">
