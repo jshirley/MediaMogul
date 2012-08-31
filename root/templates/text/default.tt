@@ -1,4 +1,0 @@
-<div class="media text">
-    [% IF asset.caption %]<h3>[% asset.caption %]</h3>[% END %]
-    [% asset.has_file ? asset.get_file.slurp : "" %]
-</div>

@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+/**
+Copyright (c) 2012 Jay Shirley. All rights reserved.
+Code licensed under the BSD license:
+  http://opensource.org/licenses/bsd-license.php
+
+**/
+
+var cli      = require('cli'),
+  path       = require('path'),
+  mediamogul = require( path.join('../lib', 'mediamogul') );
+  options    = cli.parse();
+
+mediamogul.run( options );
+

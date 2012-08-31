@@ -1,94 +1,110 @@
-MediaMogul
-=================
+# MediaMogul
 
-MediaMogul does two things. It tries to do them very well and hopefully it succeeds.
+Node based application, using Express and node-canvas with S3 file storage. Persistent storage and authentication stored in SQLite3.
 
-Media Storage
------------------------------
+## The Problem
 
-First, it stores your media. This can be images, text, whatever. Doesn't matter. I'll be adding in support for more things like video as well.  It stores your media in MongoDB.
+I really hate the way that media is embedded on sites. It's cumbersome, and you generally have to either regenerate a site completely through obscure templates or edit each entry.
 
-Media Delivery
------------------------------
+MediaMogul aims to manage the way your media is displayed and used on your site.
 
-Second, it allows you to use your media in a sane way. MediaMogul can spit out snippets of markup just like a YouTube embed tag for your media. The markup is easily customized and specific to the type of media. Images, videos all can have different profiles.
+It does this through an API that delivers ready-to-embed markup for each asset, with classifications of assets able to specify separate default templates and profiles.
 
-But wait, there's more!
------------------------------
+In a nutshell, on your blog you can say, "Show me the best `pie-fight` image for my blog". Which, as an API request, looks like a simple GET request to `http://media.shirley.im/embed/pie-fight/blog`.
 
-MediaMogul also has transformation and pre-delivery steps. Right now this is only on images, but it lets you scale and rotate your images. If you use this feature (which you should) it is best to put MediaMogul behind something like Varnish.
+What if you want to rotate the image? Easy! `http://media.shirley.im/embed/pie-fight/blog?rotate=90`.
 
-MediaMogul is not a caching system. Every call to scale or rotate an image will do that same thing. Varnish is a caching system. Limelight is, too. Plan accordingly.  This will be explained later and cleaned up a lot more.
+But wait, there's more! Need to fit it in a 250px segment? `http://media.shirley.im/embed/pie-fight/blog?rotate=90&fit=250`.
 
-Customizing the snippets
---------------------------
+The URI construction is pretty simple. You specify `/embed/$key`. The optional third argument is the profile (which can determine asset-type-specific defaults, like image width or video auto-play).
 
-You can create different markup snippets by simply creating a new template in the "templates" directory and passing in a param "profile". It is specific to the media type.
+If the last argument ends in a .js extension, the output is wrapped in JavaScript which writes to the document the embed code. This enables behaviors like: `<script src="http://media.shirley.im/embed/pie-fight/blog.js"></script>`. This is not an ideal way of loading images, though!
 
-Drop a template in templates/image called "example.tt" and put something like this in:
+## Dependencies
 
-    <div class="example">
-        [% media_uri %] - This is the URI for accessing this media.
-        [% asset.name %] - This is the object for the asset. ".name" returns name.
-        [% asset.caption %] - And this returns the caption
+### Via npm:
+
+* knox
+* canvas
+* sqlite3
+* express
+* yui
+* config
+* cli
+* everyauth
+
+And, of course, an S3 account for starters.
+
+## Media Storage
+
+Media storage is simply S3. S3 is ubiquitous and cheap.
+
+## Authentication
+
+You can host multiple users on the same MediaMogul install. Fun for you alone or all your friends. Except Zach.
+
+By default, only the first registered user can use MediaMogul. If you want to open it up, there are two other modes:
+
+### Open Enrollment
+
+Anybody can register. Anybody can upload. This is probably not what you want, but in a private intranet could be useful.
+
+### Invite Only
+
+Each user gets invited with an invitation key, allowing them to sign-up. MediaMogul does not email this key, that's your job. It will, however, give it to you in a nicely packaged text box.
+
+## Templating
+
+Flexible templates, but to start with just handlebars.
+
+## Media vs Embed
+
+You can fetch the direct media with profiles directly, or fetch just the code necessary to embed it on the page. The intention is to fetch the embed code, which returns markup for use.
+
+## Direct Media Fetching
+
+Fetch media and the wrapping embed code accordingly:
+
+    GET /media/$key/$profile
+
+Such as
+
+    GET /media/happy-people/thumbnail
+
+Would return:
+
+    <div class="thumbnail">
+      <img src="//my.mediamogul.com/media/happy-people/-/300x200.jpg">
     </div>
 
-Then, just call /media/$image-name/embed?profile=example
+Optional meta-data can affect the rendering, such as creating with attribution and a caption:
 
-Voila! Now you have a customized snippet returned.
+    <div class="thumbnail">
+      <img src="//my.mediamogul.com/media/happy-people/-/300x200.jpg">
+      <div class="caption">{{caption}}</div>
+      <cite>The Noun Project</cite>
+    </div>
 
-The default profiles for images are "blog" and "thumbnail".  Blog will scale the images to a maximum edge of 500 pixels, and thumbnail is 250. 
+## Primitives
+
+    Asset
+     - key
+     - type (image, video)
+
+    Asset Properties
+     - key
+     - value
+     - safe (for html)
+
+    Template
+     - key
+     - template
+     - engine (default to handlebars)
+
+## Open Questions
+
+### Should MediaMogul store the CSS profiles for assets?
+
+I'm inclined to say no, and should conform to some sane defaults. Perhaps merely Bootstrap, but easy to update and change.
 
 
-Installation
-------------------
-
-Installation is currently a bit underdocumented. This is what works for me.
-
-Use Debian Squeeze.
-
-    sudo apt-get install mongodb git-core build-essential curl
-
-Also, make sure to install the *development* version of the various image files you intend to use (protip: just install them all).
-
-Here is what I use:
-
-    sudo apt-get install libjpeg8-dev libpng12-dev libgif-dev
-
-Create a user (or your own user account) to run MediaMogul. Once you are logged in as that user, use perlbrew and cpanm (cpanminus) to install all the perl dependencies. I have a bootstrap script that works (but is only tested on Squeeze).
-
-See it under contrib/debian-bootstrap.sh.  This will setup Perl for that user and install all necessary setup modules for that user. It then checks MediaMogul out from github and install all the direct dependencies.
-
-To get everything going, try this:
-
-    curl https://github.com/jshirley/MediaMogul/raw/master/contrib/debian-bootstrap.sh | bash
-
-When it fails, submit a bug report and I'll help you out!
-
-Running Under FastCGI
----------------------
-
-I recommend using FastCGI and the FCGI::Engine manager. This will start a daemon. To start with, install FCGI::Engine:
-
-    cpanm FCGI::Engine
-
-Then edit the configuration in script/fastcgi.yml to point to the right directory you are running MediaMogul out of and where you want the PID and the socket.
-
-Then you just run:
-
-    MediaMogul/script/manager.pl start
-
-You should be good.  Just configure your frontend server to talk to it. Again, I recommend having Varnish at some point between MediaMogul and the ultimate end-users so the transformations are cached.
-
-Running Under Plack
--------------------
-The other recommended option is using Server::Starter and Plack (Starman). If you are going to use those, under the same account you are going to run MediaMogul as, run:
-
-    cpanm Starman Server::Starter Catalyst::Engine::PSGI Net::Server::SS::PreFork
-
-This will get you a preforking server that you can throw Varnish in front of. Then it is quite easy to run the application:
-
-    cd MediaMogul
-    start_server --port 127.0.0.1:8080 -- starman --workers 8 script/mediamogul.psgi
-
-Now the app is running on port 8080. Go nuts!  This is a nice solution because you have a reliable server running directly. If you use FastCGI, you still have to have something that is the gateway into FastCGI.

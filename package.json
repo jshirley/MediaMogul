@@ -1,0 +1,24 @@
+{
+    "name"       : "MediaMogul",
+    "description": "Media storage, retrieval and embedding.",
+    "homepage"   : "http://mm.shirley.im/",
+    "version"    : "0.1.0",
+    "author"     : "J. Shirley <j@shirley.im> (http://j.shirley.im)",
+
+    "engines": {
+        "node": "0.8.x",
+        "npm" : "1.1.x"
+    },
+
+    "dependencies": {
+        "combohandler": "~0.1",
+        "connect"     : ">=1.8.0 <2.0.0",
+        "express"     : ">=3.0.0 <4.0.0",
+        "yui"         : "3.6.0",
+        "knox"        : ">=0.1.0 <1.0.0",
+        "canvas"      : ">=0.1.0 <1.0.0",
+        "sqlite3"     : ">=2.0.0 <3.0.0",
+        "handlebars"  : "",
+        "markdown"    : ""
+    }
+}

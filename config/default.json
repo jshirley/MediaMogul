@@ -1,0 +1,21 @@
+{
+  "S3" : {
+    "key"    : "AKIAJYPTK25KKQVFNZ2Q",
+    "secret" : "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",
+    "bucket" : "jshirley-mm"
+  },
+  "domain" : "media.shirley.im",
+  "port" : 3333,
+  "pubDir" : "public/",
+  "templates" : {
+    "dir" : "shared/templates/",
+    "cache" : false
+  },
+  "yui" : {
+    "node" : {
+      "useSync" : true,
+      "filter"  : "raw"
+    },
+    "client" : { }
+  }
+}

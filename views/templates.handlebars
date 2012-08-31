@@ -1,0 +1,7 @@
+YUI.add('mm-templates', function(Y) {
+    var Templates = Y.namespace('MM').Templates = {};
+
+    {{#templates}}
+    Templates['{{{name}}}'] = Y.Handlebars.template({{{template}}});
+    {{/templates}}
+}, '0.1.0', { requires : [ 'handlebars-base' ] } );
